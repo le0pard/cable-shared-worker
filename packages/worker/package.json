@@ -1,0 +1,29 @@
+{
+  "name": "@cable-shared-worker/worker",
+  "version": "0.1.0",
+  "description": "ActionCable and AnyCable Shared Worker support",
+  "keywords": [
+    "anycable",
+    "actioncable",
+    "shared worker",
+    "visibility api"
+  ],
+  "main": "lib/index.cjs.js",
+  "module": "lib/index.esm.js",
+  "unpkg": "lib/index.umd.js",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "author": "Alexey Vasiliev",
+  "license": "MIT",
+  "repository": "github:le0pard/cable-shared-worker",
+  "bugs": {
+    "url": "https://github.com/le0pard/cable-shared-worker/issues"
+  },
+  "homepage": "https://github.com/le0pard/cable-shared-worker#readme",
+  "optionalDependencies": {
+    "@anycable/web": ">= 0.1",
+    "@rails/actioncable": ">= 6"
+  }
+}
