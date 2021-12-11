@@ -25,7 +25,7 @@ const captureWorkerError = (event) => {
 const handleWorkerMessages = (event) => {
   const message = event?.data
 
-  switch (message?.type) {
+  switch (message?.command) {
     case PING_COMMAND: { //always response on ping
       workerPort.postMessage({command: PONG_COMMAND})
       return
