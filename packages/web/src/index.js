@@ -29,7 +29,7 @@ const handleWorkerMessages = ({event, options = {}}) => {
       return
     }
     case WORKER_MSG_ERROR_COMMAND: { // get error from worker
-      options.onError?.call(null, message.event)
+      options.onError(message.event)
       return
     }
     default: {
@@ -38,7 +38,7 @@ const handleWorkerMessages = ({event, options = {}}) => {
   }
 }
 
-const startWorker = ({type = TYPE_SHARED_WORKER, resolve, reject, workerUrl, options = {}, workerOptions = {}}) => {
+const startWorker = ({resolve, reject, workerUrl, type = TYPE_SHARED_WORKER, options = {}, workerOptions = {}}) => {
   try {
     if (type === TYPE_SHARED_WORKER) {
       workerPort = new window.SharedWorker(workerUrl, workerOptions).port
@@ -54,8 +54,8 @@ const startWorker = ({type = TYPE_SHARED_WORKER, resolve, reject, workerUrl, opt
 
   workerPort.addEventListener('message', (event) => handleWorkerMessages({event, options}))
   if (options.onError) {
-    workerPort.addEventListener('error', options.onError)
-    workerPort.addEventListener('messageerror', options.onError)
+    workerPort.addEventListener('error', (event) => options.onError(event.toString()))
+    workerPort.addEventListener('messageerror', (event) => options.onError(event.toString()))
   }
 
   if (type === TYPE_SHARED_WORKER) {
@@ -115,6 +115,12 @@ const initWorker = (workerUrl, options = {}) => (
   })
 )
 
+const createSubscription = (channel, params = {}, onReceiveMessage = (() => {})) => (
+  new Promise((resolve, reject) => {
+
+  })
+)
+
 const closeWorker = () => (
   new Promise((resolve) => {
     if (workerPort) {
@@ -132,5 +138,6 @@ const closeWorker = () => (
 
 export {
   initWorker,
+  createSubscription,
   closeWorker
 }

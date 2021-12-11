@@ -1,10 +1,16 @@
 import {
-  PING_COMMAND,
   PONG_COMMAND,
   WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
+import {
+  addPortForStore,
+  updatePortPongTime,
+  startPortsAliveCheck
+} from './workerPorts'
 
-import {addPortForStore, updatePortPongTime, startPortsAliveCheck} from './utils/swPorts'
+const DEFAULT_OPTIONS = {
+  detection: 'auto' // auto, anycable, actioncable
+}
 
 const isSharedWorker = (
   self &&
@@ -55,6 +61,11 @@ if (isSharedWorker) {
 
 const initWebsocket = (wsUrl, options = {}) => (
   new Promise((resolve, reject) => {
+    const mergedOptions = {
+      ...DEFAULT_OPTIONS,
+      ...options
+    }
+
 
   })
 )
