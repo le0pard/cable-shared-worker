@@ -1,0 +1,15 @@
+{
+  "name": "cable-shared-worker",
+  "version": "0.1.0",
+  "description": "ActionCable and AnyCable Shared Worker support",
+  "keywords": ["anycable", "actioncable", "shared worker", "visibility api"],
+  "main": "lib/main.cjs.js",
+  "module": "lib/main.esm.js",
+  "unpkg": "lib/main.umd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexey Vasiliev",
+  "license": "MIT",
+  "repository": "github:le0pard/cable-shared-worker"
+}
