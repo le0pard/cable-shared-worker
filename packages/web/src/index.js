@@ -1,12 +1,14 @@
 import {
   PING_COMMAND,
-  PONG_COMMAND
+  PONG_COMMAND,
+  WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
 
 const DEFAULT_OPTIONS = {
   workerOptions: {
     name: 'CabelWS'
   },
+  onError: (error) => { console.log(error) },
   fallbackToWebWorker: true // switch to web worker on safari
 }
 
@@ -18,16 +20,16 @@ const sharedWorkerAvailable = !!window.SharedWorker
 
 let workerPort = null
 
-const captureWorkerError = (event) => {
-  console.error(event)
-}
-
-const handleWorkerMessages = (event) => {
+const handleWorkerMessages = ({event, options = {}}) => {
   const message = event?.data
 
   switch (message?.command) {
-    case PING_COMMAND: { //always response on ping
+    case PING_COMMAND: { // always response on ping
       workerPort.postMessage({command: PONG_COMMAND})
+      return
+    }
+    case WORKER_MSG_ERROR_COMMAND: { // get error from worker
+      options.onError?.call(null, message.event)
       return
     }
     default: {
@@ -36,7 +38,7 @@ const handleWorkerMessages = (event) => {
   }
 }
 
-const startWorker = ({type = TYPE_SHARED_WORKER, resolve, reject, workerUrl, workerOptions = {}}) => {
+const startWorker = ({type = TYPE_SHARED_WORKER, resolve, reject, workerUrl, options = {}, workerOptions = {}}) => {
   try {
     if (type === TYPE_SHARED_WORKER) {
       workerPort = new window.SharedWorker(workerUrl, workerOptions).port
@@ -50,9 +52,11 @@ const startWorker = ({type = TYPE_SHARED_WORKER, resolve, reject, workerUrl, wor
     return reject('Error to create worker')
   }
 
-  workerPort.addEventListener('message', handleWorkerMessages)
-  workerPort.addEventListener('error', captureWorkerError)
-  workerPort.addEventListener('messageerror', captureWorkerError)
+  workerPort.addEventListener('message', (event) => handleWorkerMessages({event, options}))
+  if (options.onError) {
+    workerPort.addEventListener('error', options.onError)
+    workerPort.addEventListener('messageerror', options.onError)
+  }
 
   if (type === TYPE_SHARED_WORKER) {
     workerPort.start() // we need start port only for shared worker
@@ -81,6 +85,7 @@ const initWorker = (workerUrl, options = {}) => (
     const workerArgs = {
       resolve,
       reject,
+      options: mergedOptions,
       workerUrl,
       workerOptions: {
         ...DEFAULT_OPTIONS.workerOptions,

@@ -1,6 +1,7 @@
 import {
   PING_COMMAND,
-  PONG_COMMAND
+  PONG_COMMAND,
+  WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
 
 import {addPortForStore, updatePortPongTime, startPortsAliveCheck} from './utils/swPorts'
@@ -11,8 +12,8 @@ const isSharedWorker = (
   self instanceof SharedWorkerGlobalScope
 )
 
-const captureWorkerError = ({event}) => {
-  console.error(event)
+const captureWorkerError = ({port, event}) => {
+  port.postMessage({command: WORKER_MSG_ERROR_COMMAND, event: event.toString()})
 }
 
 const handleWorkerMessages = ({id, event}) => {
@@ -31,8 +32,8 @@ const handleWorkerMessages = ({id, event}) => {
 
 const registerPort = (port) => {
   const id = addPortForStore(port)
-  port.addEventListener('message', (event) => handleWorkerMessages({id, event}))
-  port.addEventListener('messageerror', (event) => captureWorkerError({id, event}))
+  port.addEventListener('message', (event) => handleWorkerMessages({port, id, event}))
+  port.addEventListener('messageerror', (event) => captureWorkerError({port, id, event}))
 }
 
 // check that we are in shared worker context

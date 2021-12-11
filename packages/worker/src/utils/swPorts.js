@@ -1,4 +1,4 @@
-import {uuid} from './uuid'
+import {uuid} from 'cable-shared/uuid'
 import {
   PING_COMMAND
 } from 'cable-shared/constants'
