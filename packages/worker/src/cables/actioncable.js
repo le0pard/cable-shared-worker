@@ -16,12 +16,16 @@ export const initActioncableAPI = (api, options = {}, hooks = {}) => {
   const isDisconnected = () => !websocketConnection
 
   const pauseConnection = () => {
-    websocketConnection.disconnect()
+    if (websocketConnection) {
+      websocketConnection.disconnect()
+    }
     websocketConnectionStatus = STATUS_PAUSED
   }
 
   const resumeConnection = () => {
-    websocketConnection.connect()
+    if (websocketConnection) {
+      websocketConnection.connect()
+    }
     websocketConnectionStatus = STATUS_CONNECTED
   }
 
@@ -32,14 +36,14 @@ export const initActioncableAPI = (api, options = {}, hooks = {}) => {
   }
 
   const pauseConnectionIfNeeded = () => {
-    if (options?.closeWebsocketWithoutChannels) {
+    if (options?.closeWebsocketWithoutChannels && isActive()) {
       const haveActiveChannels = Object.keys(portReceiverMapping).some((portKey) => {
         return Object.keys(portReceiverMapping[portKey]).some((keySub) => {
           return portReceiverMapping[portKey][keySub] && !!portReceiverMapping[portKey][keySub]?.channel
         })
       })
 
-      if (!haveActiveChannels && isActive()) {
+      if (!haveActiveChannels) {
         pauseConnection()
       }
     }
