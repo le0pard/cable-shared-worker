@@ -2,17 +2,29 @@ import {
   WEBSOCKET_MESSAGE_COMMAND
 } from 'cable-shared/constants'
 
-export const initActioncableAPI = (api) => {
+const STATUS_CONNECTED = 'connected'
+const STATUS_PAUSED = 'paused'
+const STATUS_DISCONNECTED = 'disconnected'
+
+export const initActioncableAPI = (api, hooks = {}) => {
   let websocketConnection = null
+  let websocketConnectionStatus = STATUS_DISCONNECTED
   let portReceiverMapping = {}
 
   return {
-    createCable: (url) => (
+    isActive: () => !!websocketConnection && websocketConnectionStatus === STATUS_CONNECTED,
+    isPaused: () => !!websocketConnection && websocketConnectionStatus === STATUS_PAUSED,
+    isDisconnected: () => !websocketConnection,
+    createCable: (url, _options = {}) => (
       new Promise((resolve) => {
         if (websocketConnection) {
           return resolve()
         }
         websocketConnection = api.createConsumer(url)
+        websocketConnectionStatus = STATUS_CONNECTED
+        if (hooks?.connect) {
+          hooks.connect()
+        }
         return resolve()
       })
     ),
@@ -86,6 +98,10 @@ export const initActioncableAPI = (api) => {
         if (websocketConnection) {
           websocketConnection.disconnect()
           websocketConnection = null
+          websocketConnectionStatus = STATUS_DISCONNECTED
+        }
+        if (hooks?.disconnect) {
+          hooks.disconnect()
         }
         return resolve()
       })

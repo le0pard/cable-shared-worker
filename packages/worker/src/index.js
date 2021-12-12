@@ -24,19 +24,48 @@ const isSharedWorker = (
 )
 
 let cableAPI = null
+let queueChannels = []
 
-const subscribeToChannel = ({id, port}, channelSettings = {}) => {
+const addChannelInQueue = (channel = {}) => {
+  queueChannels = [
+    ...queueChannels,
+    channel
+  ]
+}
+
+const cleanChannelsInQueue = () => {
+  queueChannels = []
+}
+
+const activateChannelInQueue = () => {
   if (!cableAPI) {
     return
   }
 
-  cableAPI.subscribeTo({
+  queueChannels.forEach((params) => {
+    cableAPI.subscribeTo(params)
+  })
+
+  cleanChannelsInQueue()
+  return
+}
+
+const subscribeToChannel = ({id, port}, channelSettings = {}) => {
+  const params = {
     portID: id,
     port,
     id: channelSettings.id,
     channel: channelSettings.channel,
     params: channelSettings.params
-  })
+  }
+
+  if (!cableAPI || cableAPI.isDisconnected()) {
+    addChannelInQueue(params)
+
+    return
+  }
+
+  cableAPI.subscribeTo(params)
 
   return
 }
@@ -116,7 +145,10 @@ const initCableLibrary = (options = {}) => {
   }
   const mergedOptions = {...DEFAULT_OPTIONS, ...options}
   const {cableType, cableLibrary} = mergedOptions
-  cableAPI = loadCableApiWrapper(cableType, cableLibrary)
+  cableAPI = loadCableApiWrapper(cableType, cableLibrary, {
+    connect: activateChannelInQueue,
+    disconnect: cleanChannelsInQueue
+  })
   return cableAPI
 }
 

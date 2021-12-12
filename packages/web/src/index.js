@@ -20,8 +20,9 @@ const DEFAULT_OPTIONS = {
 const TYPE_SHARED_WORKER = 'shared'
 const TYPE_WEB_WORKER = 'web'
 
-const webWorkerAvailable = !!window.Worker
-const sharedWorkerAvailable = !!window.SharedWorker
+const isWebWorkerAvailable = !!window.Worker
+const isSharedWorkerAvailable = !!window.SharedWorker
+const isWorkersAvailable = isSharedWorkerAvailable || isWebWorkerAvailable
 
 let workerPort = null
 let cableReceiveMapping = {}
@@ -109,18 +110,18 @@ const initWorker = (workerUrl, options = {}) => (
       }
     }
 
-    if (sharedWorkerAvailable) {
+    if (isSharedWorkerAvailable) {
       return startWorker({
         ...workerArgs,
         type: TYPE_SHARED_WORKER
       })
     }
 
-    if (!sharedWorkerAvailable && !mergedOptions.fallbackToWebWorker) {
+    if (!isSharedWorkerAvailable && !mergedOptions.fallbackToWebWorker) {
       return reject('Shared worker not available')
     }
 
-    if (webWorkerAvailable) {
+    if (isWebWorkerAvailable) {
       return startWorker({
         ...workerArgs,
         type: TYPE_WEB_WORKER
@@ -184,6 +185,9 @@ const closeWorker = () => (
 )
 
 export {
+  isWorkersAvailable,
+  isSharedWorkerAvailable,
+  isWebWorkerAvailable,
   initWorker,
   createSubscription,
   closeWorker
