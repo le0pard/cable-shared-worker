@@ -17,7 +17,7 @@ const sendPingToPorts = () => {
   })
 }
 
-const removeDeadPortsFromStore = (cleanupCallback = (() => { })) => {
+const removeDeadPortsFromStore = (cleanupCallback = () => ({})) => {
   const now = new Date()
 
   activePorts = Object.keys(activePorts).reduce((agg, id) => {
@@ -59,7 +59,7 @@ export const updatePortPongTime = (id) => {
   }
 }
 
-export const startPortsAliveCheck = (cleanupCallback = (() => {})) => {
+export const startPortsAliveCheck = (cleanupCallback = () => ({})) => {
   setInterval(() => {
     sendPingToPorts()
     removeDeadPortsFromStore(cleanupCallback)

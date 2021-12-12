@@ -3,7 +3,7 @@ import {initAnycableAPI} from './cables/anycable'
 
 export const loadCableApiWrapper = (cableType = 'actioncable', cableLibrary = null) => {
   if (!cableLibrary) {
-    throw ('cableLibrary cannot be null')
+    throw new Error('cableLibrary cannot be null')
   }
 
   switch (cableType?.toLowerCase()) {
@@ -14,7 +14,7 @@ export const loadCableApiWrapper = (cableType = 'actioncable', cableLibrary = nu
       return initAnycableAPI(cableLibrary)
     }
     default: {
-      throw (`${cableType} is not actioncable or anycable type`)
+      throw new Error(`${cableType} is not actioncable or anycable type`)
     }
   }
 }

@@ -1,5 +1,6 @@
 export const initAnycableAPI = (api) => {
   let websocketConnection = null
+  let portReceiverMapping = {}
 
   return {
     createCable: (url, options = {}) => (
@@ -8,7 +9,13 @@ export const initAnycableAPI = (api) => {
         return resolve()
       })
     ),
-    subscribeTo: (channel, params = {}, onReceiveMessage = (() => { })) => {
+    subscribeTo: ({port, portID, id, channel, params = {}}) => {
+
+    },
+    unsubscribeFrom: (portID, id) => {
+
+    },
+    unsubscribeAllFromPort: (portID) => {
 
     },
     destroyCable: () => (

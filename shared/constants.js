@@ -1,3 +1,6 @@
 export const PING_COMMAND = 'ping'
 export const PONG_COMMAND = 'pong'
+export const SUBSCRIBE_TO_CHANNEL = 'subscribeToChannel'
+export const UNSUBSCRIBE_FROM_CHANNEL = 'unsubscribeFromChannel'
+export const WEBSOCKET_MESSAGE_COMMAND = 'websocketMessage'
 export const WORKER_MSG_ERROR_COMMAND = 'workerMsgError'

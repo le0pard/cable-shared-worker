@@ -1,8 +1,12 @@
 import {
   PING_COMMAND,
   PONG_COMMAND,
+  SUBSCRIBE_TO_CHANNEL,
+  UNSUBSCRIBE_FROM_CHANNEL,
+  WEBSOCKET_MESSAGE_COMMAND,
   WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
+import {uuid} from 'cable-shared/uuid'
 
 const DEFAULT_OPTIONS = {
   workerOptions: {
@@ -19,13 +23,24 @@ const webWorkerAvailable = !!window.Worker
 const sharedWorkerAvailable = !!window.SharedWorker
 
 let workerPort = null
+let cableReceiveMapping = {}
+
+const triggerSubscriptionForChannel = (id, data) => {
+  if (cableReceiveMapping[id]) {
+    cableReceiveMapping[id](data)
+  }
+}
 
 const handleWorkerMessages = ({event, options = {}}) => {
-  const message = event?.data
+  const message = event?.data || {}
 
   switch (message?.command) {
     case PING_COMMAND: { // always response on ping
       workerPort.postMessage({command: PONG_COMMAND})
+      return
+    }
+    case WEBSOCKET_MESSAGE_COMMAND: {
+      triggerSubscriptionForChannel(message?.id, message?.data)
       return
     }
     case WORKER_MSG_ERROR_COMMAND: { // get error from worker
@@ -115,12 +130,40 @@ const initWorker = (workerUrl, options = {}) => (
   })
 )
 
-const createSubscription = (channel, params = {}, onReceiveMessage = (() => {})) => (
+const createSubscription = (channel, params = {}, onReceiveMessage = () => ({})) => (
   new Promise((resolve, reject) => {
     if (!workerPort) {
       return reject('You need create worker by initWorker method before call createSubscription method')
     }
 
+    const id = uuid()
+    cableReceiveMapping = {
+      ...cableReceiveMapping,
+      [id]: onReceiveMessage
+    }
+    workerPort.postMessage({command: SUBSCRIBE_TO_CHANNEL, subscription: {
+      id,
+      channel,
+      params
+    }})
+
+    return resolve(() => {
+      cableReceiveMapping = Object.keys(cableReceiveMapping).reduce((agg, key) => {
+        if (key === id) {
+          return agg
+        }
+        return {
+          ...agg,
+          [key]: cableReceiveMapping[key]
+        }
+      }, {})
+
+      if (workerPort) {
+        workerPort.postMessage({
+          command: UNSUBSCRIBE_FROM_CHANNEL, subscription: {id}
+        })
+      }
+    })
   })
 )
 
