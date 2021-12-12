@@ -14,9 +14,7 @@ const DEFAULT_OPTIONS = {
   },
   onError: (error) => {console.log(error)}, /* eslint-disable-line no-console */
   fallbackToWebWorker: true, // switch to web worker on safari
-  visibility: {
-    timeout: 0 // 0 is disabled
-  }
+  visibilityTimeout: 0 // 0 is disabled
 }
 
 const TYPE_SHARED_WORKER = 'shared'
