@@ -1,3 +1,5 @@
+let visibilityTimer = null
+
 const getVisibilityPropertyNames = () => {
   if (typeof document.mozHidden !== 'undefined') {
     return ['mozVisibilityState', 'mozvisibilitychange']
@@ -12,12 +14,29 @@ const getVisibilityPropertyNames = () => {
 
 const [visibilityState, visibilityChange] = getVisibilityPropertyNames()
 
-const handleVisibilityChange = () => {
-  if (document[visibilityState] === 'visible') {
-    // nothing
+export const activateVisibilityAPI = ({timeout, visible, hidden}) => {
+  const handleVisibility = () => {
+    const isVisible = document[visibilityState] === 'visible'
+    if (isVisible) {
+      if (visibilityTimer) {
+        clearTimeout(visibilityTimer)
+        visibilityTimer = null
+      }
+      if (visible) {
+        visible()
+      }
+    } else {
+      visibilityTimer = setTimeout(() => {
+        if (hidden) {
+          hidden()
+        }
+        visibilityTimer = null
+      }, timeout * 1000)
+    }
+  }
+
+  document.addEventListener(visibilityChange, handleVisibility)
+  return () => {
+    document.removeEventListener(visibilityChange, handleVisibility)
   }
 }
-
-document.addEventListener(visibilityChange, handleVisibilityChange)
-
-document.removeEventListener(visibilityChange, handleVisibilityChange)

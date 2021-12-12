@@ -2,6 +2,8 @@ import {
   PONG_COMMAND,
   SUBSCRIBE_TO_CHANNEL,
   UNSUBSCRIBE_FROM_CHANNEL,
+  VISIBILITY_SHOW_COMMAND,
+  VISIBILITY_HIDDEN_COMMAND,
   WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
 import {
@@ -80,6 +82,26 @@ const unsubscribeFromChannel = (portID, id) => {
   return
 }
 
+const resumeChannelsForPort = ({id, port}) => {
+  if (!cableAPI || cableAPI.isDisconnected()) {
+    return
+  }
+
+  cableAPI.resumeChannels({id, port})
+
+  return
+}
+
+const pauseChannelsForPort = ({id, port}) => {
+  if (!cableAPI || cableAPI.isDisconnected()) {
+    return
+  }
+
+  cableAPI.pauseChannels({id, port})
+
+  return
+}
+
 const captureWorkerError = ({port, event}) => {
   port.postMessage({command: WORKER_MSG_ERROR_COMMAND, event: event.toString()})
 }
@@ -98,6 +120,14 @@ const handleWorkerMessages = ({id, event, port}) => {
     }
     case UNSUBSCRIBE_FROM_CHANNEL: {
       unsubscribeFromChannel(id, message?.subscription?.id)
+      return
+    }
+    case VISIBILITY_SHOW_COMMAND: {
+      resumeChannelsForPort({id, port})
+      return
+    }
+    case VISIBILITY_HIDDEN_COMMAND: {
+      pauseChannelsForPort({id, port})
       return
     }
     default: {
@@ -139,15 +169,23 @@ if (isSharedWorker) {
   registerPort(self)
 }
 
+const afterConnect = () => {
+  activateChannelInQueue()
+}
+
+const afterDisconnect = () => {
+  cleanChannelsInQueue()
+}
+
 const initCableLibrary = (options = {}) => {
   if (cableAPI) {
     return cableAPI
   }
   const mergedOptions = {...DEFAULT_OPTIONS, ...options}
-  const {cableType, cableLibrary} = mergedOptions
-  cableAPI = loadCableApiWrapper(cableType, cableLibrary, {
-    connect: activateChannelInQueue,
-    disconnect: cleanChannelsInQueue
+  const {cableType, cableLibrary, ...restOptions} = mergedOptions
+  cableAPI = loadCableApiWrapper(cableType, cableLibrary, restOptions, {
+    connect: afterConnect,
+    disconnect: afterDisconnect
   })
   return cableAPI
 }

@@ -4,9 +4,12 @@ import {
   SUBSCRIBE_TO_CHANNEL,
   UNSUBSCRIBE_FROM_CHANNEL,
   WEBSOCKET_MESSAGE_COMMAND,
+  VISIBILITY_SHOW_COMMAND,
+  VISIBILITY_HIDDEN_COMMAND,
   WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
 import {uuid} from 'cable-shared/uuid'
+import {activateVisibilityAPI} from './visibility'
 
 const DEFAULT_OPTIONS = {
   workerOptions: {
@@ -14,7 +17,8 @@ const DEFAULT_OPTIONS = {
   },
   onError: (error) => {console.log(error)}, /* eslint-disable-line no-console */
   fallbackToWebWorker: true, // switch to web worker on safari
-  visibilityTimeout: 0 // 0 is disabled
+  visibilityTimeout: 0, // 0 is disabled
+  onVisibilityChange: () => ({}) // subscribe for visibility
 }
 
 const TYPE_SHARED_WORKER = 'shared'
@@ -26,6 +30,7 @@ const isWorkersAvailable = isSharedWorkerAvailable || isWebWorkerAvailable
 
 let workerPort = null
 let cableReceiveMapping = {}
+let visibilityDeactivation = null
 
 const triggerSubscriptionForChannel = (id, data) => {
   if (cableReceiveMapping[id]) {
@@ -77,6 +82,24 @@ const startWorker = ({resolve, reject, workerUrl, type = TYPE_SHARED_WORKER, opt
 
   if (type === TYPE_SHARED_WORKER) {
     workerPort.start() // we need start port only for shared worker
+  }
+
+  if (options?.visibilityTimeout && options?.visibilityTimeout > 0) {
+    visibilityDeactivation = activateVisibilityAPI({
+      timeout: options.visibilityTimeout,
+      visible: () => {
+        workerPort.postMessage({command: VISIBILITY_SHOW_COMMAND})
+        if (options.onVisibilityChange) {
+          options.onVisibilityChange(true)
+        }
+      },
+      hidden: () => {
+        workerPort.postMessage({command: VISIBILITY_HIDDEN_COMMAND})
+        if (options.onVisibilityChange) {
+          options.onVisibilityChange(false)
+        }
+      }
+    })
   }
 
   return resolve()
@@ -171,6 +194,10 @@ const createSubscription = (channel, params = {}, onReceiveMessage = () => ({}))
 
 const closeWorker = () => (
   new Promise((resolve) => {
+    if (visibilityDeactivation) {
+      visibilityDeactivation()
+      visibilityDeactivation = null
+    }
     if (workerPort) {
       if (workerPort.close) {
         workerPort.close() // close shared worker port
