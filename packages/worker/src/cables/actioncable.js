@@ -9,6 +9,9 @@ export const initActioncableAPI = (api) => {
   return {
     createCable: (url) => (
       new Promise((resolve) => {
+        if (websocketConnection) {
+          return resolve()
+        }
         websocketConnection = api.createConsumer(url)
         return resolve()
       })

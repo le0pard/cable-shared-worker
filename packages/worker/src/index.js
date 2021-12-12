@@ -13,7 +13,8 @@ import {loadCableApiWrapper} from './workerCable'
 
 const DEFAULT_OPTIONS = {
   cableType: 'actioncable', // anycable, actioncable
-  cableLibrary: null // library require
+  cableLibrary: null, // library require
+  closeWebsocketWithoutChannels: true // close websocket if no active channels
 }
 
 const isSharedWorker = (
