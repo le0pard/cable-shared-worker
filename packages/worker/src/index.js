@@ -7,9 +7,11 @@ import {
   updatePortPongTime,
   startPortsAliveCheck
 } from './workerPorts'
+import {loadCableApiWrapper} from './workerCable'
 
 const DEFAULT_OPTIONS = {
-  detection: 'auto' // auto, anycable, actioncable
+  cableType: 'actioncable', // anycable, actioncable
+  cableLibrary: null // library require
 }
 
 const isSharedWorker = (
@@ -59,24 +61,13 @@ if (isSharedWorker) {
   registerPort(self)
 }
 
-const initWebsocket = (wsUrl, options = {}) => (
-  new Promise((resolve, reject) => {
-    const mergedOptions = {
-      ...DEFAULT_OPTIONS,
-      ...options
-    }
-
-
-  })
-)
-
-const closeWebsocket = () => (
-  new Promise((resolve, reject) => {
-
-  })
-)
+const initCableLibrary = (options = {}) => {
+  const mergedOptions = {...DEFAULT_OPTIONS, ...options}
+  const {cableType, cableLibrary} = mergedOptions
+  const api = loadCableApiWrapper(cableType, cableLibrary)
+  return api
+}
 
 export {
-  initWebsocket,
-  closeWebsocket
+  initCableLibrary
 }

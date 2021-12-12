@@ -8,7 +8,7 @@ const DEFAULT_OPTIONS = {
   workerOptions: {
     name: 'CabelWS'
   },
-  onError: (error) => { console.log(error) },
+  onError: (error) => {console.log(error)}, /* eslint-disable-line no-console */
   fallbackToWebWorker: true // switch to web worker on safari
 }
 
@@ -88,7 +88,7 @@ const initWorker = (workerUrl, options = {}) => (
       options: mergedOptions,
       workerUrl,
       workerOptions: {
-        ...DEFAULT_OPTIONS.workerOptions,
+        ...(DEFAULT_OPTIONS.workerOptions || {}),
         ...(workerOptions || {})
       }
     }
@@ -117,6 +117,9 @@ const initWorker = (workerUrl, options = {}) => (
 
 const createSubscription = (channel, params = {}, onReceiveMessage = (() => {})) => (
   new Promise((resolve, reject) => {
+    if (!workerPort) {
+      return reject('You need create worker by initWorker method before call createSubscription method')
+    }
 
   })
 )

@@ -13,12 +13,7 @@ const bannersParams = {
 }
 
 const LIBRARY_NAME = 'CableSW' // Library name
-const EXTERNAL = [
-  '@rails/actioncable',
-  '@anycable/web',
-  '@anycable/msgpack-encoder',
-  '@anycable/protobuf-encoder'
-] // external modules
+const EXTERNAL = [] // external modules
 const GLOBALS = {} // https://rollupjs.org/guide/en/#outputglobals
 const OUTPUT_DIR = 'lib'
 
