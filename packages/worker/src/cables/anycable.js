@@ -76,11 +76,10 @@ export const initAnycableAPI = (api) => {
       }
     },
     destroyCable: () => (
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
         if (websocketConnection) {
-          return websocketConnection.disconnect().then(() => {
-            websocketConnection = null
-          }).catch(reject)
+          websocketConnection.disconnect()
+          websocketConnection = null
         }
         return resolve()
       })
