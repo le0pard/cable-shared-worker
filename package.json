@@ -17,7 +17,7 @@
     "dev": "rollup -c -w",
     "lint": "eslint packages/**/src/*.js shared/**/*.js *.config.js",
     "test": "jest --config jest.config.js",
-    "test:watch": "yarn run test -- --watch"
+    "test:watch": "jest --config jest.config.js --watch"
   },
   "author": "Alexey Vasiliev",
   "license": "MIT",
