@@ -4,6 +4,7 @@ import {
   UNSUBSCRIBE_FROM_CHANNEL,
   VISIBILITY_SHOW_COMMAND,
   VISIBILITY_HIDDEN_COMMAND,
+  WEBSOCKET_PERFORM_COMMAND,
   WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
 import {addPortForStore, updatePortPongTime, startPortsAliveCheck} from './workerPorts'
@@ -72,6 +73,16 @@ const unsubscribeFromChannel = (portID, id) => {
   return
 }
 
+const performInChannel = (portID, id, perform) => {
+  if (!cableAPI) {
+    return
+  }
+
+  cableAPI.performInChannel(portID, id, perform)
+
+  return
+}
+
 const resumeChannelsForPort = ({id, port}) => {
   if (!cableAPI || cableAPI.isDisconnected()) {
     return
@@ -111,6 +122,10 @@ const handleWorkerMessages = ({id, event, port}) => {
     }
     case UNSUBSCRIBE_FROM_CHANNEL: {
       unsubscribeFromChannel(id, message?.subscription?.id)
+      return
+    }
+    case WEBSOCKET_PERFORM_COMMAND: {
+      performInChannel(id, message?.subscription?.id, message?.perform)
       return
     }
     case VISIBILITY_SHOW_COMMAND: {

@@ -3,6 +3,7 @@ import {
   PONG_COMMAND,
   SUBSCRIBE_TO_CHANNEL,
   UNSUBSCRIBE_FROM_CHANNEL,
+  WEBSOCKET_PERFORM_COMMAND,
   WEBSOCKET_MESSAGE_COMMAND,
   VISIBILITY_SHOW_COMMAND,
   VISIBILITY_HIDDEN_COMMAND,
@@ -188,22 +189,36 @@ const createSubscription = (channel, params = {}, onReceiveMessage = () => ({}))
       }
     })
 
-    return resolve(() => {
-      cableReceiveMapping = Object.keys(cableReceiveMapping).reduce((agg, key) => {
-        if (key === id) {
-          return agg
+    return resolve({
+      perform: (performAction, performParams = {}) => {
+        if (workerPort) {
+          workerPort.postMessage({
+            command: WEBSOCKET_PERFORM_COMMAND,
+            subscription: {id},
+            perform: {
+              action: performAction,
+              params: performParams
+            }
+          })
         }
-        return {
-          ...agg,
-          [key]: cableReceiveMapping[key]
-        }
-      }, {})
+      },
+      unsubscribe: () => {
+        cableReceiveMapping = Object.keys(cableReceiveMapping).reduce((agg, key) => {
+          if (key === id) {
+            return agg
+          }
+          return {
+            ...agg,
+            [key]: cableReceiveMapping[key]
+          }
+        }, {})
 
-      if (workerPort) {
-        workerPort.postMessage({
-          command: UNSUBSCRIBE_FROM_CHANNEL,
-          subscription: {id}
-        })
+        if (workerPort) {
+          workerPort.postMessage({
+            command: UNSUBSCRIBE_FROM_CHANNEL,
+            subscription: {id}
+          })
+        }
       }
     })
   })

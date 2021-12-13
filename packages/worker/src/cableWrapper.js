@@ -111,6 +111,12 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
         })
       }
     },
+    performInChannel: (portID, id, {action, params = {}}) => {
+      if (portReceiverMapping[portID] && portReceiverMapping[portID][id]?.channel) {
+        const {channel} = portReceiverMapping[portID][id]
+        channel.perform(action, params)
+      }
+    },
     unsubscribeFrom: (portID, id) => {
       if (portReceiverMapping[portID] && portReceiverMapping[portID][id]?.channel) {
         const {channel} = portReceiverMapping[portID][id]
