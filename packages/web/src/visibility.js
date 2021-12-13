@@ -1,5 +1,3 @@
-let visibilityTimer = null
-
 const getVisibilityPropertyNames = () => {
   if (typeof document.mozHidden !== 'undefined') {
     return ['mozVisibilityState', 'mozvisibilitychange']
@@ -15,6 +13,7 @@ const getVisibilityPropertyNames = () => {
 const [visibilityState, visibilityChange] = getVisibilityPropertyNames()
 
 export const activateVisibilityAPI = ({timeout, visible, hidden}) => {
+  let visibilityTimer = null
   let isChannelsWasPaused = false
 
   const handleVisibility = () => {
@@ -41,6 +40,10 @@ export const activateVisibilityAPI = ({timeout, visible, hidden}) => {
 
   document.addEventListener(visibilityChange, handleVisibility)
   return () => {
+    if (visibilityTimer) {
+      clearTimeout(visibilityTimer)
+      visibilityTimer = null
+    }
     isChannelsWasPaused = false
     document.removeEventListener(visibilityChange, handleVisibility)
   }

@@ -15,7 +15,9 @@ const DEFAULT_OPTIONS = {
   workerOptions: {
     name: 'CabelWS'
   },
-  onError: (error) => {console.log(error)}, /* eslint-disable-line no-console */
+  onError: (error) => {
+    console.log(error)
+  } /* eslint-disable-line no-console */,
   fallbackToWebWorker: true, // switch to web worker on safari
   visibilityTimeout: 0, // 0 is disabled
   onVisibilityChange: () => ({}) // subscribe for visibility
@@ -42,7 +44,8 @@ const handleWorkerMessages = ({event, options = {}}) => {
   const message = event?.data || {}
 
   switch (message?.command) {
-    case PING_COMMAND: { // always response on ping
+    case PING_COMMAND: {
+      // always response on ping
       workerPort.postMessage({command: PONG_COMMAND})
       return
     }
@@ -50,7 +53,8 @@ const handleWorkerMessages = ({event, options = {}}) => {
       triggerSubscriptionForChannel(message?.id, message?.data)
       return
     }
-    case WORKER_MSG_ERROR_COMMAND: { // get error from worker
+    case WORKER_MSG_ERROR_COMMAND: {
+      // get error from worker
       options.onError(message.event)
       return
     }
@@ -60,7 +64,14 @@ const handleWorkerMessages = ({event, options = {}}) => {
   }
 }
 
-const startWorker = ({resolve, reject, workerUrl, type = TYPE_SHARED_WORKER, options = {}, workerOptions = {}}) => {
+const startWorker = ({
+  resolve,
+  reject,
+  workerUrl,
+  type = TYPE_SHARED_WORKER,
+  options = {},
+  workerOptions = {}
+}) => {
   try {
     if (type === TYPE_SHARED_WORKER) {
       workerPort = new window.SharedWorker(workerUrl, workerOptions).port
@@ -105,7 +116,7 @@ const startWorker = ({resolve, reject, workerUrl, type = TYPE_SHARED_WORKER, opt
   return resolve()
 }
 
-const initWorker = (workerUrl, options = {}) => (
+const initWorker = (workerUrl, options = {}) =>
   new Promise((resolve, reject) => {
     if (workerPort) {
       return resolve()
@@ -153,12 +164,13 @@ const initWorker = (workerUrl, options = {}) => (
 
     return reject('Shared worker and Web worker not available')
   })
-)
 
-const createSubscription = (channel, params = {}, onReceiveMessage = () => ({})) => (
+const createSubscription = (channel, params = {}, onReceiveMessage = () => ({})) =>
   new Promise((resolve, reject) => {
     if (!workerPort) {
-      return reject('You need create worker by initWorker method before call createSubscription method')
+      return reject(
+        'You need create worker by initWorker method before call createSubscription method'
+      )
     }
 
     const id = uuid()
@@ -166,11 +178,14 @@ const createSubscription = (channel, params = {}, onReceiveMessage = () => ({}))
       ...cableReceiveMapping,
       [id]: onReceiveMessage
     }
-    workerPort.postMessage({command: SUBSCRIBE_TO_CHANNEL, subscription: {
-      id,
-      channel,
-      params
-    }})
+    workerPort.postMessage({
+      command: SUBSCRIBE_TO_CHANNEL,
+      subscription: {
+        id,
+        channel,
+        params
+      }
+    })
 
     return resolve(() => {
       cableReceiveMapping = Object.keys(cableReceiveMapping).reduce((agg, key) => {
@@ -185,14 +200,14 @@ const createSubscription = (channel, params = {}, onReceiveMessage = () => ({}))
 
       if (workerPort) {
         workerPort.postMessage({
-          command: UNSUBSCRIBE_FROM_CHANNEL, subscription: {id}
+          command: UNSUBSCRIBE_FROM_CHANNEL,
+          subscription: {id}
         })
       }
     })
   })
-)
 
-const closeWorker = () => (
+const closeWorker = () =>
   new Promise((resolve) => {
     if (visibilityDeactivation) {
       visibilityDeactivation()
@@ -209,7 +224,6 @@ const closeWorker = () => (
     }
     resolve()
   })
-)
 
 export {
   isWorkersAvailable,

@@ -6,11 +6,7 @@ import {
   VISIBILITY_HIDDEN_COMMAND,
   WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
-import {
-  addPortForStore,
-  updatePortPongTime,
-  startPortsAliveCheck
-} from './workerPorts'
+import {addPortForStore, updatePortPongTime, startPortsAliveCheck} from './workerPorts'
 import {loadCableApiWrapper} from './workerCable'
 
 const DEFAULT_OPTIONS = {
@@ -19,20 +15,14 @@ const DEFAULT_OPTIONS = {
   closeWebsocketWithoutChannels: true // close websocket if no active channels
 }
 
-const isSharedWorker = (
-  self &&
-  typeof SharedWorkerGlobalScope !== 'undefined' &&
-  self instanceof SharedWorkerGlobalScope
-)
+const isSharedWorker =
+  self && typeof SharedWorkerGlobalScope !== 'undefined' && self instanceof SharedWorkerGlobalScope
 
 let cableAPI = null
 let queueChannels = []
 
 const addChannelInQueue = (channel = {}) => {
-  queueChannels = [
-    ...queueChannels,
-    channel
-  ]
+  queueChannels = [...queueChannels, channel]
 }
 
 const cleanChannelsInQueue = () => {
@@ -110,7 +100,8 @@ const handleWorkerMessages = ({id, event, port}) => {
   const message = event?.data || {}
 
   switch (message?.command) {
-    case PONG_COMMAND: { // update port lifetime
+    case PONG_COMMAND: {
+      // update port lifetime
       updatePortPongTime(id)
       return
     }
@@ -190,6 +181,4 @@ const initCableLibrary = (options = {}) => {
   return cableAPI
 }
 
-export {
-  initCableLibrary
-}
+export {initCableLibrary}

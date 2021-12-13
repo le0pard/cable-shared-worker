@@ -2299,6 +2299,7 @@ __metadata:
     "@rollup/plugin-node-resolve": ^13.0.6
     core-js: ^3.19.3
     eslint: ^8.4.1
+    eslint-config-prettier: ^8.3.0
     eslint-plugin-import: ^2.25.3
     jest: ^27.4.4
     prettier: ^2.5.1
@@ -2878,6 +2879,17 @@ __metadata:
     escodegen: bin/escodegen.js
     esgenerate: bin/esgenerate.js
   checksum: 5aa6b2966fafe0545e4e77936300cc94ad57cfe4dc4ebff9950492eaba83eef634503f12d7e3cbd644ecc1bab388ad0e92b06fd32222c9281a75d1cf02ec6cef
+  languageName: node
+  linkType: hard
+
+"eslint-config-prettier@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "eslint-config-prettier@npm:8.3.0"
+  peerDependencies:
+    eslint: ">=7.0.0"
+  bin:
+    eslint-config-prettier: bin/cli.js
+  checksum: df4cea3032671995bb5ab07e016169072f7fa59f44a53251664d9ca60951b66cdc872683b5c6a3729c91497c11490ca44a79654b395dd6756beb0c3903a37196
   languageName: node
   linkType: hard
 

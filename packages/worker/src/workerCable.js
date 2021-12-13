@@ -1,10 +1,12 @@
-import {
-  ACTIONCABLE_TYPE,
-  ANYCABLE_TYPE
-} from 'cable-shared/constants'
+import {ACTIONCABLE_TYPE, ANYCABLE_TYPE} from 'cable-shared/constants'
 import {initCableWrapper} from './cableWrapper'
 
-export const loadCableApiWrapper = (cableType = ACTIONCABLE_TYPE, cableLibrary = null, options = {}, hooks = {}) => {
+export const loadCableApiWrapper = (
+  cableType = ACTIONCABLE_TYPE,
+  cableLibrary = null,
+  options = {},
+  hooks = {}
+) => {
   if (!cableLibrary) {
     throw new Error('cableLibrary cannot be null')
   }

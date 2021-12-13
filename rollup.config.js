@@ -61,9 +61,7 @@ const makeConfig = (env = 'development') => {
       ],
       plugins: [
         alias({
-          entries: [
-            {find: /^cable-shared\/(.*)/, replacement: './shared/$1.js'}
-          ]
+          entries: [{find: /^cable-shared\/(.*)/, replacement: './shared/$1.js'}]
         }),
         resolve(), // teach Rollup how to find external modules
         commonjs(), // so Rollup can convert external modules to an ES module
@@ -75,11 +73,13 @@ const makeConfig = (env = 'development') => {
     }
 
     if (env === 'production') {
-      config.plugins.push(terser({
-        output: {
-          comments: /^!/
-        }
-      }))
+      config.plugins.push(
+        terser({
+          output: {
+            comments: /^!/
+          }
+        })
+      )
     }
 
     return config

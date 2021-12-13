@@ -1,7 +1,5 @@
 import {uuid} from 'cable-shared/uuid'
-import {
-  PING_COMMAND
-} from 'cable-shared/constants'
+import {PING_COMMAND} from 'cable-shared/constants'
 
 const PORT_TICK_TIME = 5 * 1000 // microseconds
 const PORT_MAX_TTL = 20 * 1000 // microseconds
@@ -39,7 +37,7 @@ export const addPortForStore = (port) => {
     ...activePorts,
     [id]: {
       port,
-      pongResponseTime: (new Date())
+      pongResponseTime: new Date()
     }
   }
   return id
@@ -51,7 +49,7 @@ export const updatePortPongTime = (id) => {
       ...activePorts,
       [id]: {
         ...activePorts[id],
-        pongResponseTime: (new Date())
+        pongResponseTime: new Date()
       }
     }
   }
