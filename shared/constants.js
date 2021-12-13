@@ -1,3 +1,6 @@
+export const ACTIONCABLE_TYPE = 'actioncable'
+export const ANYCABLE_TYPE = 'anycable'
+
 export const PING_COMMAND = 'ping'
 export const PONG_COMMAND = 'pong'
 export const SUBSCRIBE_TO_CHANNEL = 'subscribeToChannel'

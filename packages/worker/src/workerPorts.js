@@ -33,8 +33,6 @@ const removeDeadPortsFromStore = (cleanupCallback = () => ({})) => {
   }, {})
 }
 
-export const getPortByID = (id) => activePorts[id]
-
 export const addPortForStore = (port) => {
   const id = uuid()
   activePorts = {

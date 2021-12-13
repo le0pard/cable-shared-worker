@@ -1,4 +1,5 @@
 import {
+  ACTIONCABLE_TYPE,
   WEBSOCKET_MESSAGE_COMMAND
 } from 'cable-shared/constants'
 
@@ -6,22 +7,28 @@ const STATUS_CONNECTED = 'connected'
 const STATUS_PAUSED = 'paused'
 const STATUS_DISCONNECTED = 'disconnected'
 
-export const initAnycableAPI = (api, options = {}, hooks = {}) => {
+export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, hooks = {}) => {
   let websocketConnection = null
   let websocketConnectionStatus = STATUS_DISCONNECTED
   let portReceiverMapping = {}
+
+  const isActioncableAPI = apiType === ACTIONCABLE_TYPE
 
   const isActive = () => !!websocketConnection && websocketConnectionStatus === STATUS_CONNECTED
   const isPaused = () => !!websocketConnection && websocketConnectionStatus === STATUS_PAUSED
   const isDisconnected = () => !websocketConnection
 
   const pauseConnection = () => {
-    websocketConnection.disconnect()
+    if (websocketConnection) {
+      websocketConnection.disconnect()
+    }
     websocketConnectionStatus = STATUS_PAUSED
   }
 
   const resumeConnection = () => {
-    websocketConnection.connect()
+    if (websocketConnection) {
+      websocketConnection.connect()
+    }
     websocketConnectionStatus = STATUS_CONNECTED
   }
 
@@ -32,14 +39,14 @@ export const initAnycableAPI = (api, options = {}, hooks = {}) => {
   }
 
   const pauseConnectionIfNeeded = () => {
-    if (options?.closeWebsocketWithoutChannels) {
+    if (options?.closeWebsocketWithoutChannels && isActive()) {
       const haveActiveChannels = Object.keys(portReceiverMapping).some((portKey) => {
         return Object.keys(portReceiverMapping[portKey]).some((keySub) => {
           return portReceiverMapping[portKey][keySub] && !!portReceiverMapping[portKey][keySub]?.channel
         })
       })
 
-      if (!haveActiveChannels && isActive()) {
+      if (!haveActiveChannels) {
         pauseConnection()
       }
     }
@@ -49,12 +56,14 @@ export const initAnycableAPI = (api, options = {}, hooks = {}) => {
     isActive,
     isPaused,
     isDisconnected,
-    createCable: (url, options = {}) => (
+    createCable: (wUrl, wOptions = {}) => (
       new Promise((resolve) => {
         if (websocketConnection) {
           return resolve()
         }
-        websocketConnection = api.createCable(url, options)
+        websocketConnection = (
+          isActioncableAPI ? api.createConsumer(wUrl) : api.createCable(wUrl, wOptions)
+        )
         websocketConnectionStatus = STATUS_CONNECTED
         if (hooks?.connect) {
           hooks.connect()
@@ -66,11 +75,8 @@ export const initAnycableAPI = (api, options = {}, hooks = {}) => {
       resumeConnectionIfNeeded()
 
       const channelData = {channel, params}
-      websocketConnection.subscribeTo(channel, params).then((subscriptionChannel) => {
-        subscriptionChannel.on('message', (data) => {
-          port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id})
-        })
 
+      const addSubscription = (subscriptionChannel) => {
         portReceiverMapping = {
           ...portReceiverMapping,
           [portID]: {
@@ -81,11 +87,37 @@ export const initAnycableAPI = (api, options = {}, hooks = {}) => {
             }
           }
         }
-      })
+      }
+
+      if (isActioncableAPI) {
+        const subscriptionChannel = websocketConnection.subscriptions.create({
+          ...params,
+          channel
+        }, {
+          received: (data) => {
+            port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id})
+          }
+        })
+
+        addSubscription(subscriptionChannel)
+      } else {
+        websocketConnection.subscribeTo(channel, params).then((subscriptionChannel) => {
+          subscriptionChannel.on('message', (data) => {
+            port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id})
+          })
+
+          addSubscription(subscriptionChannel)
+        })
+      }
     },
     unsubscribeFrom: (portID, id) => {
       if (portReceiverMapping[portID] && portReceiverMapping[portID][id]?.channel) {
-        portReceiverMapping[portID][id].channel.disconnect()
+        const {channel} = portReceiverMapping[portID][id]
+        if (isActioncableAPI) {
+          channel.unsubscribe()
+        } else {
+          channel.disconnect()
+        }
 
         portReceiverMapping = Object.keys(portReceiverMapping).reduce((aggPorts, portKey) => {
           const subsMap = Object.keys(portReceiverMapping[portKey]).reduce((aggSub, keySub) => {
@@ -108,17 +140,21 @@ export const initAnycableAPI = (api, options = {}, hooks = {}) => {
           return aggPorts
         }, {})
 
-        pauseConnectionIfNeeded()
+        setTimeout(() => pauseConnectionIfNeeded(), 0)
       }
     },
     unsubscribeAllFromPort: (portID) => {
       if (portReceiverMapping[portID]) {
-
         portReceiverMapping = Object.keys(portReceiverMapping).reduce((aggPorts, portKey) => {
           if (portKey === portID) {
             Object.keys(portReceiverMapping[portKey]).forEach((keySub) => {
               if (portReceiverMapping[portKey][keySub]?.channel) {
-                portReceiverMapping[portKey][keySub].channel.disconnect()
+                const {channel} = portReceiverMapping[portKey][keySub]
+                if (isActioncableAPI) {
+                  channel.unsubscribe()
+                } else {
+                  channel.disconnect()
+                }
               }
             })
 
@@ -131,47 +167,74 @@ export const initAnycableAPI = (api, options = {}, hooks = {}) => {
           }
         }, {})
 
-        pauseConnectionIfNeeded()
+        setTimeout(() => pauseConnectionIfNeeded(), 0)
       }
     },
     resumeChannels: ({id, port}) => {
       if (portReceiverMapping[id]) {
         resumeConnectionIfNeeded()
 
-        Promise.all(
-          Object.keys(portReceiverMapping[id]).map((keySub) => {
-            if (portReceiverMapping[id][keySub]?.channelData) {
-              const {channelData} = portReceiverMapping[id][keySub]
-              const {channel, params} = channelData
-              return websocketConnection.subscribeTo(channel, params).then((subscriptionChannel) => {
-                subscriptionChannel.on('message', (data) => {
-                  port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id: keySub})
-                })
-
-                return [
-                  keySub,
-                  {
-                    channel: subscriptionChannel,
-                    channelData
-                  }
-                ]
-              })
-            }
-            return Promise.resolve(null)
-          })
-        ).then((values) => {
-          const restoredChannels = values.filter(Boolean).reduce((agg, [keySub, data]) => {
-            return {
-              ...agg,
-              [keySub]: data
-            }
-          }, {})
-
+        if (isActioncableAPI) {
           portReceiverMapping = {
             ...portReceiverMapping,
-            [id]: restoredChannels
+            [id]: Object.keys(portReceiverMapping[id]).reduce((aggSub, keySub) => {
+              if (portReceiverMapping[id][keySub]?.channelData) {
+                const {channel, params} = portReceiverMapping[id][keySub].channelData
+                const subscriptionChannel = websocketConnection.subscriptions.create({
+                  ...params,
+                  channel
+                }, {
+                  received: (data) => {
+                    port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id: keySub})
+                  }
+                })
+                return {
+                  ...aggSub,
+                  [keySub]: {
+                    ...portReceiverMapping[id][keySub],
+                    channel: subscriptionChannel
+                  }
+                }
+              }
+              return aggSub
+            }, {})
           }
-        })
+        } else {
+          Promise.all(
+            Object.keys(portReceiverMapping[id]).map((keySub) => {
+              if (portReceiverMapping[id][keySub]?.channelData) {
+                const {channelData} = portReceiverMapping[id][keySub]
+                const {channel, params} = channelData
+                return websocketConnection.subscribeTo(channel, params).then((subscriptionChannel) => {
+                  subscriptionChannel.on('message', (data) => {
+                    port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id: keySub})
+                  })
+
+                  return [
+                    keySub,
+                    {
+                      channel: subscriptionChannel,
+                      channelData
+                    }
+                  ]
+                })
+              }
+              return Promise.resolve(null)
+            })
+          ).then((values) => {
+            const restoredChannels = values.filter(Boolean).reduce((agg, [keySub, data]) => {
+              return {
+                ...agg,
+                [keySub]: data
+              }
+            }, {})
+
+            portReceiverMapping = {
+              ...portReceiverMapping,
+              [id]: restoredChannels
+            }
+          })
+        }
       }
     },
     pauseChannels: ({id}) => {
@@ -181,7 +244,12 @@ export const initAnycableAPI = (api, options = {}, hooks = {}) => {
           [id]: Object.keys(portReceiverMapping[id]).reduce((aggSub, keySub) => {
             if (portReceiverMapping[id][keySub]?.channel) {
               const {channel, ...restData} = portReceiverMapping[id][keySub]
-              channel.disconnect()
+              if (isActioncableAPI) {
+                channel.unsubscribe()
+              } else {
+                channel.disconnect()
+              }
+
               return {
                 ...aggSub,
                 [keySub]: restData
@@ -190,8 +258,9 @@ export const initAnycableAPI = (api, options = {}, hooks = {}) => {
             return aggSub
           }, {})
         }
+
+        setTimeout(() => pauseConnectionIfNeeded(), 0)
       }
-      pauseConnectionIfNeeded()
     },
     destroyCable: () => (
       new Promise((resolve) => {

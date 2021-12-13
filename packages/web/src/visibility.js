@@ -15,6 +15,8 @@ const getVisibilityPropertyNames = () => {
 const [visibilityState, visibilityChange] = getVisibilityPropertyNames()
 
 export const activateVisibilityAPI = ({timeout, visible, hidden}) => {
+  let isChannelsWasPaused = false
+
   const handleVisibility = () => {
     const isVisible = document[visibilityState] === 'visible'
     if (isVisible) {
@@ -23,12 +25,14 @@ export const activateVisibilityAPI = ({timeout, visible, hidden}) => {
         visibilityTimer = null
       }
       if (visible) {
-        visible()
+        visible(isChannelsWasPaused)
       }
+      isChannelsWasPaused = false
     } else {
       visibilityTimer = setTimeout(() => {
+        isChannelsWasPaused = true
         if (hidden) {
-          hidden()
+          hidden(isChannelsWasPaused)
         }
         visibilityTimer = null
       }, timeout * 1000)
@@ -37,6 +41,7 @@ export const activateVisibilityAPI = ({timeout, visible, hidden}) => {
 
   document.addEventListener(visibilityChange, handleVisibility)
   return () => {
+    isChannelsWasPaused = false
     document.removeEventListener(visibilityChange, handleVisibility)
   }
 }
