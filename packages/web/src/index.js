@@ -16,8 +16,9 @@ const DEFAULT_OPTIONS = {
     name: 'CabelWS'
   },
   onError: (error) => {
-    console.log(error)
-  } /* eslint-disable-line no-console */,
+    // eslint-disable-next-line no-console
+    console.error(error)
+  },
   fallbackToWebWorker: true, // switch to web worker on safari
   visibilityTimeout: 0, // 0 is disabled
   onVisibilityChange: () => ({}) // subscribe for visibility
