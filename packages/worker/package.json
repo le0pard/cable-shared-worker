@@ -11,10 +11,6 @@
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
   "unpkg": "lib/index.umd.js",
-  "exports": {
-    ".": "./index.js",
-    "./package.json": "./package.json"
-  },
   "author": "Alexey Vasiliev",
   "license": "MIT",
   "repository": "github:le0pard/cable-shared-worker",

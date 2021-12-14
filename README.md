@@ -8,7 +8,7 @@ Cable-shared-worker - running ActionCable or AnyCable client in a shared webwork
  - Page refreshes and new tabs already have a websocket connection, so connection setup time is zero
  - The websocket connection runs in a separate thread/process so your UI is 'faster'
  - Cordination of event notifications is simpler as updates have a single source
- - Close connection for non active windows and tabs (visibility API)
+ - Close connection for non active tabs (visibility API)
  - It's the cool stuff..
 
 ## Usage
@@ -31,6 +31,23 @@ import {initWorker} from '@cable-shared-worker/web'
 await initWorker('/worker.js')
 ```
 
+Second argument accept different options:
+
+```js
+await initWorker(
+  '/worker.js',
+  {
+    workerOptions: { // worker options - more info https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker/SharedWorker
+      name: 'CabelWS'
+    },
+    onError: (error) => console.error(error), // subscribe to worker errors
+    fallbackToWebWorker: true, // switch to web worker on safari
+    visibilityTimeout: 0, // timeout for visibility API, before close channels; 0 is disabled
+    onVisibilityChange: () => ({}) // subscribe for visibility changes
+  }
+)
+```
+
 Start subscription channel:
 
 ```js
@@ -42,15 +59,38 @@ const channel = await createChannel('ChatChannel', {roomId: 42}, (data) => {
 })
 
 // call `ChatChannel#speak(data)` on the server
-channel.perform('speak', { msg: 'Hello' })
+channel.perform('speak', {msg: 'Hello'})
 
 // Unsubscribe from the channel
 channel.unsubscribe()
 ```
 
+Close worker (for shared worker this will only close current tab connection, but not worker itself):
+
+```js
+import {closeWorker} from '@cable-shared-worker/web'
+
+// close tab connection to worker
+closeWorker()
+```
+
+This helper values may help to get info what kind of workers available in browser:
+
+```js
+import {
+  isWorkersAvailable,
+  isSharedWorkerAvailable,
+  isWebWorkerAvailable
+} from '@cable-shared-worker/web'
+
+isWorkersAvailable // value is true, if Shared or Web worker available
+isSharedWorkerAvailable // value is true, if Shared worker available
+isWebWorkerAvailable // value is true, if Web worker available
+```
+
 #### Visibility API
 
-You can use [Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) to detect, that user move tab/window on background and close tab channels. Shared Worker websocket connection will closed, if no active channels (until user visited any tab/window).
+You can use [Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) to detect, that user move tab on background and close tab channels. Shared Worker websocket connection will closed, if no active channels (until user visited any tab).
 
 ```js
 import {initWorker} from '@cable-shared-worker/web'
@@ -59,9 +99,9 @@ initWorker(
   '/worker.js',
   {
     visibilityTimeout: 60, // 60 seconds wait before start close channels, default 0 is disable this functionality
-    onVisibilityChange: (isVisible, isChannelsWasPaused) => { // callback send info if visibility changed
+    onVisibilityChange: (isVisible, isChannelsWasPaused) => { // callback for visibility changes
       if (isVisible && isChannelsWasPaused) {
-        // this condition can be used to fetch API about data changes, because channels was closed due to tab on background
+        // this condition can be used to fetch data changes, because channels was closed due to tab on background
       }
     }
   }
@@ -70,7 +110,7 @@ initWorker(
 
 ### Worker
 
-In worker script (in example `worker.js`) you need initialize websocket connection.
+In worker script (in example `/worker.js`) you need initialize websocket connection.
 
 For actioncable you need installed [@rails/actioncable](https://www.npmjs.com/package/@rails/actioncable) package:
 
@@ -78,11 +118,13 @@ For actioncable you need installed [@rails/actioncable](https://www.npmjs.com/pa
 import * as actioncableLibrary from '@rails/actioncable'
 import {initCableLibrary} from '@cable-shared-worker/worker'
 
+// init actioncable library
 const api = initCableLibrary({
   cableType: 'actioncable',
   cableLibrary: actioncableLibrary
 })
 
+// connect by websocket url
 api.createCable(WebSocketURL)
 ```
 
@@ -92,11 +134,13 @@ For anycable you need install [@anycable/web](https://www.npmjs.com/package/@any
 import * as anycableLibrary from '@anycable/web'
 import {initCableLibrary} from '@cable-shared-worker/worker'
 
+// init anycable library
 const api = initCableLibrary({
   cableType: 'anycable',
   cableLibrary: anycableLibrary
 })
 
+// connect by websocket url
 api.createCable(WebSocketURL)
 ```
 
@@ -139,8 +183,38 @@ api.createCable(
 )
 ```
 
-## Browsers support
+For manuaaly close websocket connection you can use `destroyCable`:
 
-Supported in Chrome 4+, Edge 79+, Firefox 55+, Opera 57+ browsers.
+```js
+import * as actioncableLibrary from '@rails/actioncable'
+import {initCableLibrary} from '@cable-shared-worker/worker'
 
-Browser Safari does not support Shared Workers. By default system will switch to Web worker, which cannot share connection between tabs. You can disable fallback to web worker by `fallbackToWebWorker: false`.
+const api = initCableLibrary({
+  cableType: 'actioncable',
+  cableLibrary: actioncableLibrary
+})
+
+api.createCable(WebSocketURL)
+
+// later in code
+
+api.destroyCable()
+```
+
+Method `initCableLibrary` accept additional option `closeWebsocketWithoutChannels`:
+
+```js
+const api = initCableLibrary({
+  cableType: 'actioncable',
+  cableLibrary: actioncableLibrary,
+  // if true (default), worker will close websocket connection, if have zero active channels
+  // example: all website tabs went on background and call worker to close channels by timeout
+  closeWebsocketWithoutChannels: false
+})
+```
+
+## Browser Support
+
+Supported modern browsers (not IE, Opera Mini), that support Shared Worker.
+
+Note: Browser Safari does not support [Shared Worker](https://caniuse.com/sharedworkers). By default system will switch to Web Worker, which cannot share connection between tabs. You can disable fallback to Web Worker by `fallbackToWebWorker: false` (or use `isSharedWorkerAvailable` for own logic).

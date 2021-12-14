@@ -1,4 +1,4 @@
 yarn-error.log
 yarn.lock
 
-test/
+__tests__/
