@@ -167,11 +167,11 @@ const initWorker = (workerUrl, options = {}) =>
     return reject('Shared worker and Web worker not available')
   })
 
-const createSubscription = (channel, params = {}, onReceiveMessage = () => ({})) =>
+const createChannel = (channel, params = {}, onReceiveMessage = () => ({})) =>
   new Promise((resolve, reject) => {
     if (!workerPort) {
       return reject(
-        'You need create worker by initWorker method before call createSubscription method'
+        'You need create worker by initWorker method before call createChannel method'
       )
     }
 
@@ -246,6 +246,6 @@ export {
   isSharedWorkerAvailable,
   isWebWorkerAvailable,
   initWorker,
-  createSubscription,
+  createChannel,
   closeWorker
 }
