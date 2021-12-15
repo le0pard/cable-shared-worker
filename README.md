@@ -1,6 +1,6 @@
 # Cable-shared-worker (CableSW) - ActionCable and AnyCable Shared Worker support [![Test/Build/Deploy](https://github.com/le0pard/cable-shared-worker/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/le0pard/cable-shared-worker/actions/workflows/release.yml)
 
-Cable-shared-worker is running ActionCable or AnyCable client in a shared webworker allows you to share a single websocket connection for multiple browser windows and tabs.
+Cable-shared-worker is running ActionCable or AnyCable client in a Shared Worker allows you to share a single websocket connection for multiple browser windows and tabs.
 
 ## Motivation
 
@@ -8,8 +8,8 @@ Cable-shared-worker is running ActionCable or AnyCable client in a shared webwor
  - Page refreshes and new tabs already have a websocket connection, so connection setup time is zero
  - The websocket connection runs in a separate thread/process so your UI is 'faster'
  - Cordination of event notifications is simpler as updates have a single source
- - Close connection for non active tabs (visibility API)
- - It's the cool stuff..
+ - Close connection for non active (on background) tabs (by [Page Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API))
+ - It's the cool stuff...
 
 ## Install
 
@@ -88,7 +88,7 @@ isWebWorkerAvailable // value is true, if Web worker available
 
 ### Visibility API
 
-You can use [Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) to detect, that user move tab on background and close tab channels. Shared Worker websocket connection will closed, if no active channels (until user visited any tab).
+You can use [Page Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) to detect, that user move tab on background and close websocket channels. Shared Worker websocket connection can be closed, if no active channels (behaviour controlled by option `closeWebsocketWithoutChannels` in worker component).
 
 ```js
 import {initWorker} from '@cable-shared-worker/web'
@@ -206,7 +206,7 @@ const api = initCableLibrary({
   cableType: 'actioncable',
   cableLibrary: actioncableLibrary,
   // if true (default), worker will close websocket connection, if have zero active channels
-  // example: all website tabs went on background and call worker to close channels by timeout
+  // example: all tabs on the background send a signal to close all channels by visibility API timeout
   closeWebsocketWithoutChannels: false
 })
 ```
