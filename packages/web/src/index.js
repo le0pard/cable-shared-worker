@@ -234,8 +234,7 @@ const closeWorker = () =>
     if (workerPort) {
       if (workerPort.close) {
         workerPort.close() // close shared worker port
-      }
-      if (workerPort.terminate) {
+      } else if (workerPort.terminate) {
         workerPort.terminate() // close web worker port
       }
       workerPort = null
