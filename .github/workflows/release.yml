@@ -80,7 +80,9 @@ jobs:
       - name: Auth yarn
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: yarn config set npmAuthToken "$env:NPM_TOKEN"
+        run: |
+          yarn config set npmAuthToken "$env:NPM_TOKEN"
+          yarn config set npmRegistryServer "https://registry.npmjs.org"
 
       - name: Publish packages
         run: yarn workspaces foreach --no-private npm publish
