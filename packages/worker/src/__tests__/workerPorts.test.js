@@ -89,6 +89,7 @@ describe('alive ports logic', () => {
     expect(spy).toHaveBeenCalledTimes(2)
     expect(spy).toHaveBeenNthCalledWith(1, {command: 'ping'})
     expect(spy).toHaveBeenNthCalledWith(2, {command: 'ping'})
+    expect(Object.keys(__getActivePorts()).length).toEqual(2)
     expect(__getActivePorts()[aliveId]).toBeDefined()
     expect(__getActivePorts()[deadId]).toBeDefined()
 
@@ -96,10 +97,11 @@ describe('alive ports logic', () => {
 
     jest.advanceTimersByTime(15000)
 
-    expect(spy).toHaveBeenCalledTimes(5)
+    expect(spy).toHaveBeenCalledTimes(5) // +3 times
     expect(spy).toHaveBeenNthCalledWith(3, {command: 'ping'})
     expect(spy).toHaveBeenNthCalledWith(4, {command: 'ping'})
     expect(spy).toHaveBeenNthCalledWith(5, {command: 'ping'})
+    expect(Object.keys(__getActivePorts()).length).toEqual(1)
     expect(__getActivePorts()[aliveId]).toBeDefined()
     expect(__getActivePorts()[deadId]).not.toBeDefined()
 
