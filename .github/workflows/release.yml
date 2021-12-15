@@ -82,5 +82,5 @@ jobs:
         run: yarn config set npmAuthToken "$env:NPM_TOKEN"
 
       - name: Publish packages
-        run: yarn workspaces foreach npm publish
+        run: yarn workspaces foreach --no-private npm publish
 
