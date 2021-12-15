@@ -11,9 +11,7 @@ Cable-shared-worker is running ActionCable or AnyCable client in a shared webwor
  - Close connection for non active tabs (visibility API)
  - It's the cool stuff..
 
-## Usage
-
-### Install
+## Install
 
 ```bash
 npm install @cable-shared-worker/web @cable-shared-worker/worker
@@ -21,7 +19,7 @@ npm install @cable-shared-worker/web @cable-shared-worker/worker
 yarn add @cable-shared-worker/web @cable-shared-worker/worker
 ```
 
-### Web
+## Web
 
 You need to initialize worker inside your JS file:
 
@@ -88,7 +86,7 @@ isSharedWorkerAvailable // value is true, if Shared worker available
 isWebWorkerAvailable // value is true, if Web worker available
 ```
 
-#### Visibility API
+### Visibility API
 
 You can use [Visibility API](https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API) to detect, that user move tab on background and close tab channels. Shared Worker websocket connection will closed, if no active channels (until user visited any tab).
 
@@ -108,7 +106,7 @@ initWorker(
 )
 ```
 
-### Worker
+## Worker
 
 In worker script (in example `/worker.js`) you need initialize websocket connection.
 
