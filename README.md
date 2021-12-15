@@ -183,7 +183,7 @@ api.createCable(
 )
 ```
 
-For manuaaly close websocket connection you can use `destroyCable`:
+If you need manually close websocket connection, you can use `destroyCable` method:
 
 ```js
 import * as actioncableLibrary from '@rails/actioncable'
