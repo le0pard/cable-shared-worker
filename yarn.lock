@@ -1324,14 +1324,6 @@ __metadata:
 "@cable-shared-worker/worker@workspace:packages/worker":
   version: 0.0.0-use.local
   resolution: "@cable-shared-worker/worker@workspace:packages/worker"
-  dependencies:
-    "@anycable/web": ">= 0.1"
-    "@rails/actioncable": ">= 6"
-  dependenciesMeta:
-    "@anycable/web":
-      optional: true
-    "@rails/actioncable":
-      optional: true
   languageName: unknown
   linkType: soft
 
