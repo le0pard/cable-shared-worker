@@ -60,26 +60,29 @@ describe('activateVisibilityAPI', () => {
       hidden: mockHidden
     })
 
-    triggerVisibilityAPI(false)
+    expect(mockHidden.mock.calls.length).toBe(0)
+    expect(mockVisible.mock.calls.length).toBe(1) // initial setup
+
+    triggerVisibilityAPI(false) // no changes
 
     expect(mockHidden.mock.calls.length).toBe(0)
-    expect(mockVisible.mock.calls.length).toBe(0)
+    expect(mockVisible.mock.calls.length).toBe(1)
 
     jest.advanceTimersByTime(2000) // still not call function hidden
 
-    expect(mockVisible.mock.calls.length).toBe(0)
     expect(mockHidden.mock.calls.length).toBe(0)
+    expect(mockVisible.mock.calls.length).toBe(1)
 
     jest.advanceTimersByTime(3000) // call function hidden
 
-    expect(mockVisible.mock.calls.length).toBe(0)
+    expect(mockVisible.mock.calls.length).toBe(1)
     expect(mockHidden.mock.calls.length).toBe(1)
     expect(mockHidden.mock.calls[0][0]).toBe(true)
 
     triggerVisibilityAPI(true)
 
     expect(mockHidden.mock.calls.length).toBe(1) // still only prev call counted
-    expect(mockVisible.mock.calls.length).toBe(1)
-    expect(mockVisible.mock.calls[0][0]).toBe(true)
+    expect(mockVisible.mock.calls.length).toBe(2)
+    expect(mockVisible.mock.calls[1][0]).toBe(true)
   })
 })

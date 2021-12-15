@@ -39,6 +39,7 @@ export const activateVisibilityAPI = ({timeout, visible, hidden}) => {
   }
 
   document.addEventListener(visibilityChange, handleVisibility)
+  handleVisibility() // check initial state
   return () => {
     if (visibilityTimer) {
       clearTimeout(visibilityTimer)

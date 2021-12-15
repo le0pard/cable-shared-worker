@@ -101,13 +101,17 @@ const startWorker = ({
     visibilityDeactivation = activateVisibilityAPI({
       timeout: options.visibilityTimeout,
       visible: (isChannelsWasPaused) => {
-        workerPort.postMessage({command: VISIBILITY_SHOW_COMMAND})
+        if (isChannelsWasPaused) {
+          workerPort.postMessage({command: VISIBILITY_SHOW_COMMAND})
+        }
         if (options.onVisibilityChange) {
           options.onVisibilityChange(true, isChannelsWasPaused)
         }
       },
       hidden: (isChannelsWasPaused) => {
-        workerPort.postMessage({command: VISIBILITY_HIDDEN_COMMAND})
+        if (isChannelsWasPaused) {
+          workerPort.postMessage({command: VISIBILITY_HIDDEN_COMMAND})
+        }
         if (options.onVisibilityChange) {
           options.onVisibilityChange(false, isChannelsWasPaused)
         }
