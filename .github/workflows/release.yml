@@ -76,8 +76,15 @@ jobs:
       - name: Build all files
         run: yarn build
 
-      - name: Publish web packages
+      - name: Publish web package
         run: yarn npm publish
+        working-directory: packages/web
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish worker package
+        run: yarn npm publish
+        working-directory: packages/worker
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
