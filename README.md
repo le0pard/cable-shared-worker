@@ -1,6 +1,6 @@
 # Cable-shared-worker (CableSW) - ActionCable and AnyCable Shared Worker support
 
-Cable-shared-worker - running ActionCable or AnyCable client in a shared webworker allows you to share a single websocket connection for multiple browser windows and tabs.
+Cable-shared-worker is running ActionCable or AnyCable client in a shared webworker allows you to share a single websocket connection for multiple browser windows and tabs.
 
 ## Motivation
 

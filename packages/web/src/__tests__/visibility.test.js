@@ -50,7 +50,7 @@ describe('activateVisibilityAPI', () => {
     expect(mockHidden.mock.calls.length).toBe(0)
   })
 
-  it('call hidden', () => {
+  it('call hidden and show', () => {
     const mockVisible = jest.fn()
     const mockHidden = jest.fn()
 
@@ -75,5 +75,11 @@ describe('activateVisibilityAPI', () => {
     expect(mockVisible.mock.calls.length).toBe(0)
     expect(mockHidden.mock.calls.length).toBe(1)
     expect(mockHidden.mock.calls[0][0]).toBe(true)
+
+    triggerVisibilityAPI(true)
+
+    expect(mockHidden.mock.calls.length).toBe(1) // still only prev call counted
+    expect(mockVisible.mock.calls.length).toBe(1)
+    expect(mockVisible.mock.calls[0][0]).toBe(true)
   })
 })
