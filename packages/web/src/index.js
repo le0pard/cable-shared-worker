@@ -170,9 +170,7 @@ const initWorker = (workerUrl, options = {}) =>
 const createChannel = (channel, params = {}, onReceiveMessage = () => ({})) =>
   new Promise((resolve, reject) => {
     if (!workerPort) {
-      return reject(
-        'You need create worker by initWorker method before call createChannel method'
-      )
+      return reject('You need create worker by initWorker method before call createChannel method')
     }
 
     const id = uuid()

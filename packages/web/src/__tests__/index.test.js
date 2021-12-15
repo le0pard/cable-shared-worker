@@ -1,8 +1,4 @@
-import {
-  isWorkersAvailable,
-  isSharedWorkerAvailable,
-  isWebWorkerAvailable
-} from '../index'
+import {isWorkersAvailable, isSharedWorkerAvailable, isWebWorkerAvailable} from '../index'
 
 describe('isWorkersAvailable', () => {
   it('false for node', () => {

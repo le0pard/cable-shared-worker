@@ -2,7 +2,7 @@ import {uuid} from 'cable-shared/uuid'
 import {PING_COMMAND} from 'cable-shared/constants'
 
 const PORT_TICK_TIME = 5 * 1000 // microseconds
-const PORT_MAX_TTL = 20 * 1000 // microseconds
+const PORT_MAX_TTL = 24 * 1000 // microseconds
 
 let activePorts = {}
 
@@ -31,6 +31,12 @@ const removeDeadPortsFromStore = (cleanupCallback = () => ({})) => {
   }, {})
 }
 
+// needed for tests
+export const __getActivePorts = () => activePorts
+export const __resetActivePorts = () => {
+  activePorts = []
+}
+
 export const addPortForStore = (port) => {
   const id = uuid()
   activePorts = {
@@ -56,7 +62,7 @@ export const updatePortPongTime = (id) => {
 }
 
 export const startPortsAliveCheck = (cleanupCallback = () => ({})) => {
-  setInterval(() => {
+  return setInterval(() => {
     sendPingToPorts()
     removeDeadPortsFromStore(cleanupCallback)
   }, PORT_TICK_TIME)

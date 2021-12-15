@@ -31,7 +31,7 @@ describe('activateVisibilityAPI', () => {
       triggerVisibilityAPI(true)
       triggerVisibilityAPI(false)
 
-      jest.advanceTimersByTime(1000)  // call function hidden
+      jest.advanceTimersByTime(1000) // call function hidden
     }).not.toThrow()
   })
 
@@ -70,7 +70,7 @@ describe('activateVisibilityAPI', () => {
     expect(mockVisible.mock.calls.length).toBe(0)
     expect(mockHidden.mock.calls.length).toBe(0)
 
-    jest.advanceTimersByTime(3000)  // call function hidden
+    jest.advanceTimersByTime(3000) // call function hidden
 
     expect(mockVisible.mock.calls.length).toBe(0)
     expect(mockHidden.mock.calls.length).toBe(1)
