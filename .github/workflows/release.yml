@@ -82,7 +82,7 @@ jobs:
           yarn config set npmRegistryServer "https://registry.npmjs.org"
           yarn config set npmPublishAccess "public"
 
-      - name: Publish packages
+      - name: Publish packages 🚀
         run: yarn workspaces foreach --no-private npm publish
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
