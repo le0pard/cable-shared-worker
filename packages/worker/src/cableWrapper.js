@@ -1,5 +1,7 @@
 import {ACTIONCABLE_TYPE, WEBSOCKET_MESSAGE_COMMAND} from 'cable-shared/constants'
 
+const UNSUBSCRIBE_CHECK_TIMEOUT = 300 // give time to unsubscribe from channels
+
 const STATUS_CONNECTED = 'connected'
 const STATUS_PAUSED = 'paused'
 const STATUS_DISCONNECTED = 'disconnected'
@@ -147,7 +149,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
           return aggPorts
         }, {})
 
-        setTimeout(() => pauseConnectionIfNeeded(), 0)
+        setTimeout(() => pauseConnectionIfNeeded(), UNSUBSCRIBE_CHECK_TIMEOUT)
       }
     },
     unsubscribeAllFromPort: (portID) => {
@@ -174,7 +176,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
           }
         }, {})
 
-        setTimeout(() => pauseConnectionIfNeeded(), 0)
+        setTimeout(() => pauseConnectionIfNeeded(), UNSUBSCRIBE_CHECK_TIMEOUT)
       }
     },
     resumeChannels: ({id, port}) => {
@@ -185,7 +187,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
           portReceiverMapping = {
             ...portReceiverMapping,
             [id]: Object.keys(portReceiverMapping[id]).reduce((aggSub, keySub) => {
-              if (portReceiverMapping[id][keySub]?.channelData) {
+              if (portReceiverMapping[id][keySub]?.channelData && !portReceiverMapping[id][keySub]?.channel) {
                 const {channel, params} = portReceiverMapping[id][keySub].channelData
                 const subscriptionChannel = websocketConnection.subscriptions.create(
                   {
@@ -205,6 +207,11 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
                     channel: subscriptionChannel
                   }
                 }
+              } else if (portReceiverMapping[id][keySub]?.channel) {
+                return {
+                  ...aggSub,
+                  [keySub]: portReceiverMapping[id][keySub]
+                }
               }
               return aggSub
             }, {})
@@ -212,7 +219,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
         } else {
           Promise.all(
             Object.keys(portReceiverMapping[id]).map((keySub) => {
-              if (portReceiverMapping[id][keySub]?.channelData) {
+              if (portReceiverMapping[id][keySub]?.channelData && !portReceiverMapping[id][keySub]?.channel) {
                 const {channelData} = portReceiverMapping[id][keySub]
                 const {channel, params} = channelData
                 return websocketConnection
@@ -230,6 +237,11 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
                       }
                     ]
                   })
+              } if (portReceiverMapping[id][keySub]?.channel) {
+                return Promise.resolve([
+                  keySub,
+                  portReceiverMapping[id][keySub]
+                ])
               }
               return Promise.resolve(null)
             })
@@ -254,7 +266,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
         portReceiverMapping = {
           ...portReceiverMapping,
           [id]: Object.keys(portReceiverMapping[id]).reduce((aggSub, keySub) => {
-            if (portReceiverMapping[id][keySub]?.channel) {
+            if (portReceiverMapping[id][keySub]?.channel && portReceiverMapping[id][keySub]?.channelData) {
               const {channel, ...restData} = portReceiverMapping[id][keySub]
               if (isActioncableAPI) {
                 channel.unsubscribe()
@@ -271,7 +283,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
           }, {})
         }
 
-        setTimeout(() => pauseConnectionIfNeeded(), 0)
+        setTimeout(() => pauseConnectionIfNeeded(), UNSUBSCRIBE_CHECK_TIMEOUT)
       }
     },
     destroyCable: () =>
