@@ -65,7 +65,7 @@ channel.perform('speak', {msg: 'Hello'})
 channel.unsubscribe()
 ```
 
-Close worker (for shared worker this will only close current tab connection, but not worker itself):
+You can manually close worker (for shared worker this will only close current tab connection, but not worker itself):
 
 ```js
 import {closeWorker} from '@cable-shared-worker/web'
@@ -215,6 +215,6 @@ const api = initCableLibrary({
 
 ## Browser Support
 
-Supported modern browsers (not IE, Opera Mini), that support Shared Worker.
+Supported modern browsers, that support Shared Worker (IE, Opera Mini not supported).
 
 Note: Browser Safari does not support [Shared Worker](https://caniuse.com/sharedworkers). By default system will switch to Web Worker, which cannot share connection between tabs. You can disable fallback to Web Worker by `fallbackToWebWorker: false` (or use `isSharedWorkerAvailable` for own logic).
