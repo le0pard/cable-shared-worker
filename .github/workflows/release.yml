@@ -34,6 +34,9 @@ jobs:
       - name: Install Javascript dependencies
         run: yarn install --immutable
 
+      - name: Run eslint
+        run: yarn lint
+
       - name: Run tests
         run: yarn test
 

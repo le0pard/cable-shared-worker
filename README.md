@@ -216,3 +216,13 @@ const api = initCableLibrary({
 Supported modern browsers, that support Shared Worker (IE, Opera Mini not supported).
 
 Note: Browser Safari does not support [Shared Worker](https://caniuse.com/sharedworkers). By default system will switch to Web Worker, which cannot share connection between tabs. You can disable fallback to Web Worker by `fallbackToWebWorker: false` (or use `isSharedWorkerAvailable` for own logic).
+
+## Development
+
+```bash
+$ yarn # install all dependencies
+$ yarn dev # run development build with watch functionality
+$ yarn build # run production build
+$ yarn lint # run eslint checks
+$ yarn test # run tests
+```
