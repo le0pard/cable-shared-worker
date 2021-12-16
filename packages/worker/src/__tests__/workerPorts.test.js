@@ -1,7 +1,7 @@
 import {
   addPortForStore,
   updatePortPongTime,
-  startPortsAliveCheck,
+  recurrentPortsChecks,
   __getActivePorts,
   __resetActivePorts
 } from '../workerPorts'
@@ -59,7 +59,7 @@ describe('alive ports logic', () => {
     }
 
     const id = addPortForStore(port)
-    aliveTimer = startPortsAliveCheck()
+    aliveTimer = recurrentPortsChecks()
 
     jest.advanceTimersByTime(10000)
 
@@ -82,7 +82,7 @@ describe('alive ports logic', () => {
     const aliveId = addPortForStore(alivePort)
     const deadId = addPortForStore(deadPort)
 
-    aliveTimer = startPortsAliveCheck()
+    aliveTimer = recurrentPortsChecks()
 
     jest.advanceTimersByTime(10000)
 

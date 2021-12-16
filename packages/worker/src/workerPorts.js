@@ -6,7 +6,7 @@ const PORT_MAX_TTL = 24 * 1000 // microseconds
 
 let activePorts = {}
 
-const sendPingToPorts = () => {
+const sendPingCommandToPorts = () => {
   Object.keys(activePorts).forEach((id) => {
     const {port} = activePorts[id]
     if (port) {
@@ -20,8 +20,10 @@ const removeDeadPortsFromStore = (cleanupCallback = () => ({})) => {
 
   activePorts = Object.keys(activePorts).reduce((agg, id) => {
     const {pongResponseTime, port} = activePorts[id]
-    if (pongResponseTime && now.getTime() - pongResponseTime.getTime() > PORT_MAX_TTL) {
-      cleanupCallback.call(null, {id, port}) // looks like tab was closed
+    if (pongResponseTime && now.getTime() - pongResponseTime.getTime() > PORT_MAX_TTL) { // looks like tab was closed
+      if (cleanupCallback) {
+        cleanupCallback({id, port})
+      }
       return agg
     }
     return {
@@ -61,9 +63,9 @@ export const updatePortPongTime = (id) => {
   }
 }
 
-export const startPortsAliveCheck = (cleanupCallback = () => ({})) => {
+export const recurrentPortsChecks = (cleanupCallback = () => ({})) => {
   return setInterval(() => {
-    sendPingToPorts()
+    sendPingCommandToPorts()
     removeDeadPortsFromStore(cleanupCallback)
   }, PORT_TICK_TIME)
 }

@@ -7,7 +7,7 @@ import {
   WEBSOCKET_PERFORM_COMMAND,
   WORKER_MSG_ERROR_COMMAND
 } from 'cable-shared/constants'
-import {addPortForStore, updatePortPongTime, startPortsAliveCheck} from './workerPorts'
+import {addPortForStore, updatePortPongTime, recurrentPortsChecks} from './workerPorts'
 import {loadCableApiWrapper} from './workerCable'
 
 const DEFAULT_OPTIONS = {
@@ -168,8 +168,8 @@ if (isSharedWorker) {
     registerPort(port)
     port.start() // Required when using addEventListener. Otherwise called implicitly by onmessage setter.
   })
-  // checking for dead ports only in shared worker
-  startPortsAliveCheck(disconnectSubscriptionsFromPort)
+  // checking for dead ports only in shared worker; for web worker closed tab terminate worker
+  recurrentPortsChecks(disconnectSubscriptionsFromPort)
 } else {
   // in dedicated worker we use self as port (and do not check if it is alive - it will die together with page)
   registerPort(self)
