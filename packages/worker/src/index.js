@@ -158,7 +158,6 @@ const registerPort = (port) => {
   port.addEventListener('messageerror', (event) => captureWorkerError({port, id, event}))
 }
 
-// check that we are in shared worker context
 if (isSharedWorker) {
   // Event handler called when a tab tries to connect to this worker.
   self.addEventListener('connect', (e) => {
@@ -168,7 +167,7 @@ if (isSharedWorker) {
     registerPort(port)
     port.start() // Required when using addEventListener. Otherwise called implicitly by onmessage setter.
   })
-  // checking for dead ports only in shared worker; for web worker closed tab terminate worker
+  // checking for dead ports in shared worker; for web worker closed tab terminate worker
   recurrentPortsChecks(disconnectSubscriptionsFromPort)
 } else {
   // in dedicated worker we use self as port (and do not check if it is alive - it will die together with page)
