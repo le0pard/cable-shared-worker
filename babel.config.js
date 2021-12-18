@@ -22,19 +22,10 @@ module.exports = (api) => {
         {
           targets: browserlist,
           modules: isTestEnv ? 'auto' : false,
-          useBuiltIns: 'usage',
-          corejs: 3,
-          exclude: ['transform-typeof-symbol']
+          useBuiltIns: false
         }
       ]
     ],
-    plugins: [
-      [
-        '@babel/plugin-transform-runtime',
-        {
-          helpers: false
-        }
-      ]
-    ].filter(Boolean)
+    plugins: []
   }
 }
