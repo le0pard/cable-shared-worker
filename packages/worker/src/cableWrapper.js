@@ -102,14 +102,14 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
           }
         )
 
-        addSubscription(subscriptionChannel)
+        return addSubscription(subscriptionChannel)
       } else {
-        websocketConnection.subscribeTo(channel, params).then((subscriptionChannel) => {
+        return websocketConnection.subscribeTo(channel, params).then((subscriptionChannel) => {
           subscriptionChannel.on('message', (data) => {
             port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id})
           })
 
-          addSubscription(subscriptionChannel)
+          return addSubscription(subscriptionChannel)
         })
       }
     },

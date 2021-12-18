@@ -20,7 +20,8 @@ const removeDeadPortsFromStore = (cleanupCallback = () => ({})) => {
 
   activePorts = Object.keys(activePorts).reduce((agg, id) => {
     const {pongResponseTime, port} = activePorts[id]
-    if (pongResponseTime && now.getTime() - pongResponseTime.getTime() > PORT_MAX_TTL) { // looks like tab was closed
+    if (pongResponseTime && now.getTime() - pongResponseTime.getTime() > PORT_MAX_TTL) {
+      // looks like tab was closed
       if (cleanupCallback) {
         cleanupCallback({id, port})
       }

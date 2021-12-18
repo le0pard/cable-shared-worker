@@ -97,7 +97,7 @@ const startWorker = ({
     workerPort.start() // we need start port only for shared worker
   }
 
-  if (options?.visibilityTimeout && options?.visibilityTimeout > 0) {
+  if (options?.visibilityTimeout && options.visibilityTimeout > 0) {
     visibilityDeactivation = activateVisibilityAPI({
       timeout: options.visibilityTimeout,
       visible: (isChannelsWasPaused) => {
@@ -124,6 +124,8 @@ const startWorker = ({
 
 const initWorker = (workerUrl, options = {}) =>
   new Promise((resolve, reject) => {
+    console.log('startWorker', isSharedWorkerAvailable)
+
     if (workerPort) {
       return resolve()
     }

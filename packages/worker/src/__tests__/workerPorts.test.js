@@ -95,12 +95,14 @@ describe('alive ports logic', () => {
 
     updatePortPongTime(aliveId) // update port alive
 
+    jest.clearAllMocks()
+
     jest.advanceTimersByTime(15000)
 
-    expect(spy).toHaveBeenCalledTimes(5) // +3 times
+    expect(spy).toHaveBeenCalledTimes(3)
+    expect(spy).toHaveBeenNthCalledWith(1, {command: 'ping'})
+    expect(spy).toHaveBeenNthCalledWith(2, {command: 'ping'})
     expect(spy).toHaveBeenNthCalledWith(3, {command: 'ping'})
-    expect(spy).toHaveBeenNthCalledWith(4, {command: 'ping'})
-    expect(spy).toHaveBeenNthCalledWith(5, {command: 'ping'})
     expect(Object.keys(__getActivePorts()).length).toEqual(1)
     expect(__getActivePorts()[aliveId]).toBeDefined()
     expect(__getActivePorts()[deadId]).not.toBeDefined()
