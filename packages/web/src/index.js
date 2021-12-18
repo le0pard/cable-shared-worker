@@ -124,8 +124,6 @@ const startWorker = ({
 
 const initWorker = (workerUrl, options = {}) =>
   new Promise((resolve, reject) => {
-    console.log('startWorker', isSharedWorkerAvailable)
-
     if (workerPort) {
       return resolve()
     }
