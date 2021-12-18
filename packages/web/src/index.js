@@ -14,7 +14,7 @@ import {activateVisibilityAPI} from './visibility'
 
 const DEFAULT_OPTIONS = {
   workerOptions: {
-    name: 'CabelWS'
+    name: 'CableSW'
   },
   onError: (error) => {
     // eslint-disable-next-line no-console

@@ -38,7 +38,7 @@ await initWorker(
   '/worker.js',
   {
     workerOptions: { // worker options - more info https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker/SharedWorker
-      name: 'CabelWS'
+      name: 'CableSW'
     },
     onError: (error) => console.error(error), // subscribe to worker errors
     fallbackToWebWorker: true, // switch to web worker on safari
