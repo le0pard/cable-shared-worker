@@ -1,6 +1,6 @@
 {
   "name": "@cable-shared-worker/worker",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "ActionCable and AnyCable Shared Worker support",
   "keywords": [
     "anycable",
