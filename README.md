@@ -19,6 +19,8 @@ npm install @cable-shared-worker/web @cable-shared-worker/worker
 yarn add @cable-shared-worker/web @cable-shared-worker/worker
 ```
 
+Both packages should be the same version.
+
 ## Web
 
 You need to initialize worker inside your JS file:
@@ -215,7 +217,7 @@ const api = initCableLibrary({
 
 Supported modern browsers, that support Shared Worker (IE, Opera Mini not supported).
 
-Note: Browser Safari does not support [Shared Worker](https://caniuse.com/sharedworkers). By default system will switch to Web Worker, which cannot share connection between tabs. You can disable fallback to Web Worker by `fallbackToWebWorker: false` (or use `isSharedWorkerAvailable` for own logic).
+Browser Safari does not support [Shared Worker](https://caniuse.com/sharedworkers). Package will switch to Web Worker, which cannot share connection between tabs. You can disable fallback to Web Worker by `fallbackToWebWorker: false` (or use `isSharedWorkerAvailable` for own logic).
 
 ## Development
 
