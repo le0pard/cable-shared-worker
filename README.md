@@ -74,7 +74,7 @@ import {closeWorker} from '@cable-shared-worker/web'
 closeWorker()
 ```
 
-This helper values may help to get info what kind of workers available in browser:
+This helpers may help to get info what kind of workers available in browser:
 
 ```js
 import {
@@ -83,9 +83,9 @@ import {
   isWebWorkerAvailable
 } from '@cable-shared-worker/web'
 
-isWorkersAvailable // value is true, if Shared or Web worker available
-isSharedWorkerAvailable // value is true, if Shared worker available
-isWebWorkerAvailable // value is true, if Web worker available
+isWorkersAvailable // return true, if Shared or Web worker available
+isSharedWorkerAvailable // return true, if Shared worker available
+isWebWorkerAvailable // return true, if Web worker available
 ```
 
 ### Visibility API
