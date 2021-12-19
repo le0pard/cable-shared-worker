@@ -1,6 +1,6 @@
 # Cable-shared-worker (CableSW) - ActionCable and AnyCable Shared Worker support [![Test/Build/Deploy](https://github.com/le0pard/cable-shared-worker/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/le0pard/cable-shared-worker/actions/workflows/release.yml)
 
-![after](https://user-images.githubusercontent.com/98444/146680498-af308e73-a69d-451c-9f9d-0f8055ebab6c.png)
+![schema](https://user-images.githubusercontent.com/98444/146680693-9fb07d51-a688-4cd3-b78d-c3cbd97e58d5.png)
 
 Cable-shared-worker is running ActionCable or AnyCable client in a Shared Worker allows you to share a single websocket connection for multiple browser windows and tabs.
 
@@ -230,4 +230,3 @@ $ yarn build # run production build
 $ yarn lint # run eslint checks
 $ yarn test # run tests
 ```
-
