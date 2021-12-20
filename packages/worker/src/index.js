@@ -5,7 +5,8 @@ import {
   VISIBILITY_SHOW_COMMAND,
   VISIBILITY_HIDDEN_COMMAND,
   WEBSOCKET_PERFORM_COMMAND,
-  WORKER_MSG_ERROR_COMMAND
+  WORKER_MSG_ERROR_COMMAND,
+  ALL_COMMANDS
 } from 'cable-shared/constants'
 import {addPortForStore, updatePortPongTime, recurrentPortsChecks} from './workerPorts'
 import {loadCableApiWrapper} from './workerCable'
@@ -13,13 +14,15 @@ import {loadCableApiWrapper} from './workerCable'
 const DEFAULT_OPTIONS = {
   cableType: 'actioncable', // anycable, actioncable
   cableLibrary: null, // library require
-  closeWebsocketWithoutChannels: true // close websocket if no active channels
+  closeWebsocketWithoutChannels: true, // close websocket if no active channels
+  handleCustomWebCommand: null // custom handler web command to worker
 }
 
 const isSharedWorker =
   self && typeof SharedWorkerGlobalScope !== 'undefined' && self instanceof SharedWorkerGlobalScope
 
 let cableAPI = null
+let cableOptions = {}
 let queueChannels = []
 
 const addChannelInQueue = (channel = {}) => {
@@ -137,7 +140,16 @@ const handleWorkerMessages = ({id, event, port}) => {
       return
     }
     default: {
-      // nothing
+      // custom web commands
+      if (cableOptions.handleCustomWebCommand) {
+        const responseFn = (command, data = {}) => {
+          if (ALL_COMMANDS.indexOf(command) >= 0) {
+            throw new Error(`Command ${command} busy by cable-shared-worker`)
+          }
+          port.postMessage({command, data})
+        }
+        cableOptions.handleCustomWebCommand(message?.command, message?.data, responseFn)
+      }
     }
   }
 }
@@ -186,8 +198,8 @@ const initCableLibrary = (options = {}) => {
   if (cableAPI) {
     return cableAPI
   }
-  const mergedOptions = {...DEFAULT_OPTIONS, ...options}
-  const {cableType, cableLibrary, ...restOptions} = mergedOptions
+  cableOptions = {...DEFAULT_OPTIONS, ...options}
+  const {cableType, cableLibrary, ...restOptions} = cableOptions
   cableAPI = loadCableApiWrapper(cableType, cableLibrary, restOptions, {
     connect: afterConnect,
     disconnect: afterDisconnect

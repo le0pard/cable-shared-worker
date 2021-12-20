@@ -215,6 +215,52 @@ const api = initCableLibrary({
 })
 ```
 
+## Custom communication between window and worker
+
+You can use cable-shared-worker for custom communication between window and worker. In window you can use method `sendCommand` to send custom command to worker:
+
+```js
+import {initWorker} from '@cable-shared-worker/web'
+
+const worker = await initWorker('/worker.js')
+
+worker.sendCommand('WINDOW_CUSTOM_COMMAND', {data: 'example'})
+```
+
+On worker side you need define `handleCustomWebCommand` function. First argument will be custom command (in example `WINDOW_CUSTOM_COMMAND`), second one - command data (in example `{data: 'example'}`), third one - response function, which can send response command to window:
+
+```js
+import * as actioncableLibrary from '@rails/actioncable'
+import {initCableLibrary} from '@cable-shared-worker/worker'
+
+const api = initCableLibrary({
+  cableType: 'actioncable',
+  cableLibrary: actioncableLibrary,
+  handleCustomWebCommand: (command, data, responseFunction) => {
+    responseFunction('WORKER_CUSTOM_COMMAND', {another: 'data'})
+  }
+})
+```
+
+To handle custom commands from worker on window, you need provide `handleCustomWorkerCommand` method in `initWorker`:
+
+```js
+import {initWorker} from '@cable-shared-worker/web'
+
+const worker = await initWorker(
+  '/worker.js',
+  {
+    handleCustomWorkerCommand: (command, data) => {
+      console.log('worker response', command, data)
+    }
+  }
+)
+
+worker.sendCommand('WINDOW_CUSTOM_COMMAND', {data: 'example'})
+```
+
+Note: You cannot [send commands](https://github.com/le0pard/cable-shared-worker/blob/main/shared/constants.js), that the package uses itself for communication.
+
 ## Browser Support
 
 Supported modern browsers, that support Shared Worker (IE, Opera Mini not supported).

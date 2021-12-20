@@ -7,7 +7,8 @@ import {
   WEBSOCKET_MESSAGE_COMMAND,
   VISIBILITY_SHOW_COMMAND,
   VISIBILITY_HIDDEN_COMMAND,
-  WORKER_MSG_ERROR_COMMAND
+  WORKER_MSG_ERROR_COMMAND,
+  ALL_COMMANDS
 } from 'cable-shared/constants'
 import {uuid} from 'cable-shared/uuid'
 import {activateVisibilityAPI} from './visibility'
@@ -21,8 +22,9 @@ const DEFAULT_OPTIONS = {
     console.error(error)
   },
   fallbackToWebWorker: true, // switch to web worker on safari
+  handleCustomWorkerCommand: null, // custom handler worker command to web
   visibilityTimeout: 0, // 0 is disabled
-  onVisibilityChange: () => ({}) // subscribe for visibility
+  onVisibilityChange: null // subscribe for visibility
 }
 
 const TYPE_SHARED_WORKER = 'shared'
@@ -61,7 +63,10 @@ const handleWorkerMessages = ({event, options = {}}) => {
       return
     }
     default: {
-      // nothing
+      // custom worker commands
+      if (options.handleCustomWorkerCommand) {
+        options.handleCustomWorkerCommand(message?.command, message?.data)
+      }
     }
   }
 }
@@ -119,7 +124,14 @@ const startWorker = ({
     })
   }
 
-  return resolve()
+  return resolve({
+    sendCommand: (command, data = {}) => {
+      if (ALL_COMMANDS.indexOf(command) >= 0) {
+        throw new Error(`Command ${command} busy by cable-shared-worker`)
+      }
+      workerPort.postMessage({command, data})
+    }
+  })
 }
 
 const initWorker = (workerUrl, options = {}) =>
