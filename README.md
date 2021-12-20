@@ -50,7 +50,7 @@ await initWorker(
 )
 ```
 
-Start subscription channel:
+After this you can start subscription channel:
 
 ```js
 import {createChannel} from '@cable-shared-worker/web'

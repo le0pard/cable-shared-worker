@@ -2,7 +2,7 @@ import {uuid} from 'cable-shared/uuid'
 import {PING_COMMAND} from 'cable-shared/constants'
 
 const PORT_TICK_TIME = 5 * 1000 // microseconds
-const PORT_MAX_TTL = 24 * 1000 // microseconds
+const PORT_MAX_TTL = 21 * 1000 // microseconds
 
 let activePorts = {}
 
@@ -16,6 +16,7 @@ const sendPingCommandToPorts = () => {
 }
 
 const removeDeadPortsFromStore = (cleanupCallback = () => ({})) => {
+  sendPingCommandToPorts() // lets ping our ports before remove
   const now = new Date()
 
   activePorts = Object.keys(activePorts).reduce((agg, id) => {
@@ -66,7 +67,6 @@ export const updatePortPongTime = (id) => {
 
 export const recurrentPortsChecks = (cleanupCallback = () => ({})) => {
   return setInterval(() => {
-    sendPingCommandToPorts()
     removeDeadPortsFromStore(cleanupCallback)
   }, PORT_TICK_TIME)
 }
