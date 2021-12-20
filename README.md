@@ -242,7 +242,7 @@ const api = initCableLibrary({
 })
 ```
 
-To handle custom commands from worker on window, you need provide `handleCustomWorkerCommand` method in `initWorker`:
+To handle custom commands from worker in window, you need provide `handleCustomWorkerCommand` method in `initWorker`:
 
 ```js
 import {initWorker} from '@cable-shared-worker/web'
