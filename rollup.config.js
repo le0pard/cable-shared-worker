@@ -46,9 +46,7 @@ const makeConfig = (env = 'development') => {
           banner,
           file: `packages/${name}/${OUTPUT_DIR}/index.cjs.js`, // CommonJS
           format: 'cjs',
-          // We use `default` here as we are only exporting one thing using `export default`.
-          // https://rollupjs.org/guide/en/#outputexports
-          exports: 'named',
+          exports: 'named', // https://rollupjs.org/guide/en/#outputexports
           globals: GLOBALS
         },
         {
