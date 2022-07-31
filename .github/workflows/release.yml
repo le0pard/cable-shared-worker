@@ -7,14 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           persist-credentials: false
 
       - name: Install Node.JS
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
           cache: 'yarn'
           registry-url: 'https://registry.npmjs.org'
           scope: '@cable-shared-worker'
@@ -37,14 +36,13 @@ jobs:
       NODE_ENV: production
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           persist-credentials: false
 
       - name: Install Node.JS
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '18'
           cache: 'yarn'
           registry-url: 'https://registry.npmjs.org'
           scope: '@cable-shared-worker'
