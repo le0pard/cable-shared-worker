@@ -265,7 +265,7 @@ Note: You cannot [send commands](https://github.com/le0pard/cable-shared-worker/
 
 Supported modern browsers, that support Shared Worker (IE, Opera Mini not supported).
 
-Browser Safari does not support [Shared Worker](https://caniuse.com/sharedworkers). Package will switch to Web Worker, which cannot share connection between tabs. You can disable fallback to Web Worker by `fallbackToWebWorker: false` (or use `isSharedWorkerAvailable` for own logic).
+Safari supports [Shared Worker](https://caniuse.com/sharedworkers) only from version 16.0 (Sep, 2022). For older version, package will switch to Web Worker, which cannot share connection between tabs. You can disable fallback to Web Worker by `fallbackToWebWorker: false` (or use `isSharedWorkerAvailable` for own logic).
 
 ## Development
 
