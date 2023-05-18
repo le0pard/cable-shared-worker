@@ -1,6 +1,6 @@
 {
   "name": "@cable-shared-worker/web",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "ActionCable and AnyCable Shared Worker support",
   "keywords": [
     "anycable",
@@ -16,6 +16,12 @@
   "main": "lib/index.cjs.js",
   "module": "lib/index.esm.js",
   "unpkg": "lib/index.umd.js",
+  "exports": {
+    ".": {
+      "import": "./lib/index.esm.js",
+      "require": "./lib/index.cjs.js"
+    }
+  },
   "author": "Alexey Vasiliev",
   "license": "MIT",
   "repository": "github:le0pard/cable-shared-worker",

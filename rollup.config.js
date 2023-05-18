@@ -40,21 +40,24 @@ const makeConfig = (env = 'development') => {
           file: `packages/${name}/${OUTPUT_DIR}/index.umd.js`, // UMD
           format: 'umd',
           exports: 'auto',
-          globals: GLOBALS
+          globals: GLOBALS,
+          sourcemap: true
         },
         {
           banner,
           file: `packages/${name}/${OUTPUT_DIR}/index.cjs.js`, // CommonJS
           format: 'cjs',
           exports: 'named', // https://rollupjs.org/guide/en/#outputexports
-          globals: GLOBALS
+          globals: GLOBALS,
+          sourcemap: true
         },
         {
           banner,
           file: `packages/${name}/${OUTPUT_DIR}/index.esm.js`, // ESM
           format: 'es',
           exports: 'auto',
-          globals: GLOBALS
+          globals: GLOBALS,
+          sourcemap: true
         }
       ],
       plugins: [
@@ -73,6 +76,7 @@ const makeConfig = (env = 'development') => {
     if (env === 'production') {
       config.plugins.push(
         terser({
+          sourceMap: true,
           output: {
             comments: /^!/
           }
