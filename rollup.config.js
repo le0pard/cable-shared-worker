@@ -2,7 +2,6 @@ import alias from '@rollup/plugin-alias'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import {babel} from '@rollup/plugin-babel'
-import terser from '@rollup/plugin-terser'
 // packages
 import webPkg from './packages/web/package.json'
 import workerPkg from './packages/worker/package.json'
@@ -15,9 +14,9 @@ const bannersParams = {
 const LIBRARY_NAME = 'CableSW' // Library name
 const EXTERNAL = [] // external modules
 const GLOBALS = {} // https://rollupjs.org/guide/en/#outputglobals
-const OUTPUT_DIR = 'lib'
+const OUTPUT_DIR = 'dist'
 
-const makeConfig = (env = 'development') => {
+const makeConfig = () => {
   const configs = Object.keys(bannersParams).map((name) => {
     const banner = `/*!
  * ${bannersParams[name].name}
@@ -30,7 +29,7 @@ const makeConfig = (env = 'development') => {
  * @license ${bannersParams[name].license}
  */`
 
-    let config = {
+    return {
       input: `packages/${name}/src/index.js`,
       external: EXTERNAL,
       output: [
@@ -72,28 +71,11 @@ const makeConfig = (env = 'development') => {
         })
       ]
     }
-
-    if (env === 'production') {
-      config.plugins.push(
-        terser({
-          sourceMap: true,
-          output: {
-            comments: /^!/
-          }
-        })
-      )
-    }
-
-    return config
   })
 
   return configs
 }
 
-export default (commandLineArgs) => {
-  if (commandLineArgs.environment === 'BUILD:production') {
-    return makeConfig('production')
-  }
-
+export default () => {
   return makeConfig()
 }

@@ -1,6 +1,6 @@
 {
   "name": "@cable-shared-worker/web",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "ActionCable and AnyCable Shared Worker support",
   "keywords": [
     "anycable",
@@ -9,19 +9,20 @@
     "visibility api"
   ],
   "files": [
-    "lib/",
+    "dist/",
     "README.md",
     "LICENSE"
   ],
-  "main": "lib/index.cjs.js",
-  "module": "lib/index.esm.js",
-  "unpkg": "lib/index.umd.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "unpkg": "dist/index.umd.js",
   "exports": {
     ".": {
-      "import": "./lib/index.esm.js",
-      "require": "./lib/index.cjs.js"
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
     }
   },
+  "types": "dist/index.esm.d.ts",
   "author": "Alexey Vasiliev",
   "license": "MIT",
   "repository": "github:le0pard/cable-shared-worker",
