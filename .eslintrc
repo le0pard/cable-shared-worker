@@ -5,7 +5,7 @@
     "ecmaFeatures": {}
   },
   "extends": ["eslint:recommended", "prettier"],
-  "ignorePatterns": ["packages/*/lib/*.js"],
+  "ignorePatterns": ["packages/*/dist/*.js"],
   "rules": {
     "array-bracket-spacing": 2,
     "brace-style": [
