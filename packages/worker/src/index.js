@@ -7,7 +7,7 @@ import {
   WEBSOCKET_PERFORM_COMMAND,
   WORKER_MSG_ERROR_COMMAND,
   ALL_COMMANDS
-} from 'cable-shared/constants'
+} from './../../../shared/constants'
 import {addPortForStore, updatePortPongTime, recurrentPortsChecks} from './workerPorts'
 import {loadCableApiWrapper} from './workerCable'
 

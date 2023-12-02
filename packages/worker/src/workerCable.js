@@ -1,4 +1,4 @@
-import {ACTIONCABLE_TYPE, ANYCABLE_TYPE} from 'cable-shared/constants'
+import {ACTIONCABLE_TYPE, ANYCABLE_TYPE} from './../../../shared/constants'
 import {initCableWrapper} from './cableWrapper'
 
 export const loadCableApiWrapper = (

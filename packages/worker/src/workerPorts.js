@@ -1,5 +1,5 @@
-import {uuid} from 'cable-shared/uuid'
-import {PING_COMMAND} from 'cable-shared/constants'
+import {uuid} from './../../../shared/uuid'
+import {PING_COMMAND} from './../../../shared/constants'
 
 const PORT_TICK_TIME = 5 * 1000 // microseconds
 const PORT_MAX_TTL = 21 * 1000 // microseconds

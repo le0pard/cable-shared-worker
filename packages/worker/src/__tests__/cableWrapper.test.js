@@ -1,4 +1,4 @@
-import {initCableWrapper} from '../cableWrapper'
+import { initCableWrapper } from '../cableWrapper'
 
 describe('initCableWrapper', () => {
   afterEach(() => {

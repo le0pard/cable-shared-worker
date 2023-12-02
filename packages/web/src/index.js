@@ -9,8 +9,8 @@ import {
   VISIBILITY_HIDDEN_COMMAND,
   WORKER_MSG_ERROR_COMMAND,
   ALL_COMMANDS
-} from 'cable-shared/constants'
-import {uuid} from 'cable-shared/uuid'
+} from './../../../shared/constants'
+import {uuid} from './../../../shared/uuid'
 import {activateVisibilityAPI} from './visibility'
 
 const DEFAULT_OPTIONS = {

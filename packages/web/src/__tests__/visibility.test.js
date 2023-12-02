@@ -1,4 +1,4 @@
-import {activateVisibilityAPI} from '../visibility'
+import { activateVisibilityAPI } from '../visibility'
 
 const triggerVisibilityAPI = (isVisible = true) => {
   const visibleKey = isVisible ? 'visible' : 'hidden'

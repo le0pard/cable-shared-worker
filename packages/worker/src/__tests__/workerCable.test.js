@@ -1,4 +1,4 @@
-import {loadCableApiWrapper} from '../workerCable'
+import { loadCableApiWrapper } from '../workerCable'
 
 describe('loadCableApiWrapper', () => {
   it('throw error if no provided library', () => {

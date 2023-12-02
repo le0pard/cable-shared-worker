@@ -1,4 +1,4 @@
-import {ACTIONCABLE_TYPE, WEBSOCKET_MESSAGE_COMMAND} from 'cable-shared/constants'
+import {ACTIONCABLE_TYPE, WEBSOCKET_MESSAGE_COMMAND} from './../../../shared/constants'
 
 const UNSUBSCRIBE_CHECK_TIMEOUT = 300 // give time to unsubscribe from channels
 
