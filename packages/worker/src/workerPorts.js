@@ -1,5 +1,5 @@
-import {uuid} from './../../../shared/uuid'
-import {PING_COMMAND} from './../../../shared/constants'
+import { uuid } from './../../../shared/uuid'
+import { PING_COMMAND } from './../../../shared/constants'
 
 const PORT_TICK_TIME = 5 * 1000 // microseconds
 const PORT_MAX_TTL = 21 * 1000 // microseconds
@@ -8,9 +8,9 @@ let activePorts = {}
 
 const sendPingCommandToPorts = () => {
   Object.keys(activePorts).forEach((id) => {
-    const {port} = activePorts[id]
+    const { port } = activePorts[id]
     if (port) {
-      port.postMessage({command: PING_COMMAND})
+      port.postMessage({ command: PING_COMMAND })
     }
   })
 }
@@ -20,11 +20,11 @@ const removeDeadPortsFromStore = (cleanupCallback = () => ({})) => {
   const now = new Date()
 
   activePorts = Object.keys(activePorts).reduce((agg, id) => {
-    const {pongResponseTime, port} = activePorts[id]
+    const { pongResponseTime, port } = activePorts[id]
     if (pongResponseTime && now.getTime() - pongResponseTime.getTime() > PORT_MAX_TTL) {
       // looks like tab was closed
       if (cleanupCallback) {
-        cleanupCallback({id, port})
+        cleanupCallback({ id, port })
       }
       return agg
     }

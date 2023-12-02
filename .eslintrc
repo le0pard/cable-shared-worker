@@ -145,7 +145,7 @@
         "terms": ["todo", "fixme"]
       }
     ],
-    "object-curly-spacing": 2,
+    "object-curly-spacing": [2, "always"],
     "padded-blocks": [2, "never"],
     "quote-props": [0, "as-needed"],
     "quotes": [

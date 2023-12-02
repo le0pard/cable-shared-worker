@@ -10,8 +10,8 @@ import {
   WORKER_MSG_ERROR_COMMAND,
   ALL_COMMANDS
 } from './../../../shared/constants'
-import {uuid} from './../../../shared/uuid'
-import {activateVisibilityAPI} from './visibility'
+import { uuid } from './../../../shared/uuid'
+import { activateVisibilityAPI } from './visibility'
 
 const DEFAULT_OPTIONS = {
   workerOptions: {
@@ -44,13 +44,13 @@ const triggerSubscriptionForChannel = (id, data) => {
   }
 }
 
-const handleWorkerMessages = ({event, options = {}}) => {
+const handleWorkerMessages = ({ event, options = {} }) => {
   const message = event?.data || {}
 
   switch (message?.command) {
     case PING_COMMAND: {
       // always response on ping
-      workerPort.postMessage({command: PONG_COMMAND})
+      workerPort.postMessage({ command: PONG_COMMAND })
       return
     }
     case WEBSOCKET_MESSAGE_COMMAND: {
@@ -92,7 +92,7 @@ const startWorker = ({
     return reject('Error to create worker')
   }
 
-  workerPort.addEventListener('message', (event) => handleWorkerMessages({event, options}))
+  workerPort.addEventListener('message', (event) => handleWorkerMessages({ event, options }))
   if (options.onError) {
     workerPort.addEventListener('error', (event) => options.onError(event.toString()))
     workerPort.addEventListener('messageerror', (event) => options.onError(event.toString()))
@@ -107,7 +107,7 @@ const startWorker = ({
       timeout: options.visibilityTimeout,
       visible: (isChannelsWasPaused) => {
         if (isChannelsWasPaused) {
-          workerPort.postMessage({command: VISIBILITY_SHOW_COMMAND})
+          workerPort.postMessage({ command: VISIBILITY_SHOW_COMMAND })
         }
         if (options.onVisibilityChange) {
           options.onVisibilityChange(true, isChannelsWasPaused)
@@ -115,7 +115,7 @@ const startWorker = ({
       },
       hidden: (isChannelsWasPaused) => {
         if (isChannelsWasPaused) {
-          workerPort.postMessage({command: VISIBILITY_HIDDEN_COMMAND})
+          workerPort.postMessage({ command: VISIBILITY_HIDDEN_COMMAND })
         }
         if (options.onVisibilityChange) {
           options.onVisibilityChange(false, isChannelsWasPaused)
@@ -129,7 +129,7 @@ const startWorker = ({
       if (ALL_COMMANDS.indexOf(command) >= 0) {
         throw new Error(`Command ${command} busy by cable-shared-worker`)
       }
-      workerPort.postMessage({command, data})
+      workerPort.postMessage({ command, data })
     }
   })
 }
@@ -144,7 +144,7 @@ const initWorker = (workerUrl, options = {}) =>
       return reject('Need to provide worker url')
     }
 
-    const {workerOptions, ...restOptions} = options
+    const { workerOptions, ...restOptions } = options
 
     const mergedOptions = {
       ...DEFAULT_OPTIONS,
@@ -208,7 +208,7 @@ const createChannel = (channel, params = {}, onReceiveMessage = () => ({})) =>
         if (workerPort) {
           workerPort.postMessage({
             command: WEBSOCKET_PERFORM_COMMAND,
-            subscription: {id},
+            subscription: { id },
             perform: {
               action: performAction,
               params: performParams
@@ -230,7 +230,7 @@ const createChannel = (channel, params = {}, onReceiveMessage = () => ({})) =>
         if (workerPort) {
           workerPort.postMessage({
             command: UNSUBSCRIBE_FROM_CHANNEL,
-            subscription: {id}
+            subscription: { id }
           })
         }
       }

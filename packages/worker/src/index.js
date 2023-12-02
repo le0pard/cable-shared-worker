@@ -8,8 +8,8 @@ import {
   WORKER_MSG_ERROR_COMMAND,
   ALL_COMMANDS
 } from './../../../shared/constants'
-import {addPortForStore, updatePortPongTime, recurrentPortsChecks} from './workerPorts'
-import {loadCableApiWrapper} from './workerCable'
+import { addPortForStore, updatePortPongTime, recurrentPortsChecks } from './workerPorts'
+import { loadCableApiWrapper } from './workerCable'
 
 const DEFAULT_OPTIONS = {
   cableType: 'actioncable', // anycable, actioncable
@@ -46,7 +46,7 @@ const activateChannelInQueue = () => {
   return
 }
 
-const subscribeToChannel = ({id, port}, channelSettings = {}) => {
+const subscribeToChannel = ({ id, port }, channelSettings = {}) => {
   const params = {
     portID: id,
     port,
@@ -86,31 +86,31 @@ const performInChannel = (portID, id, perform) => {
   return
 }
 
-const resumeChannelsForPort = ({id, port}) => {
+const resumeChannelsForPort = ({ id, port }) => {
   if (!cableAPI || cableAPI.isDisconnected()) {
     return
   }
 
-  cableAPI.resumeChannels({id, port})
+  cableAPI.resumeChannels({ id, port })
 
   return
 }
 
-const pauseChannelsForPort = ({id, port}) => {
+const pauseChannelsForPort = ({ id, port }) => {
   if (!cableAPI || cableAPI.isDisconnected()) {
     return
   }
 
-  cableAPI.pauseChannels({id, port})
+  cableAPI.pauseChannels({ id, port })
 
   return
 }
 
-const captureWorkerError = ({port, event}) => {
-  port.postMessage({command: WORKER_MSG_ERROR_COMMAND, event: event.toString()})
+const captureWorkerError = ({ port, event }) => {
+  port.postMessage({ command: WORKER_MSG_ERROR_COMMAND, event: event.toString() })
 }
 
-const handleWorkerMessages = ({id, event, port}) => {
+const handleWorkerMessages = ({ id, event, port }) => {
   const message = event?.data || {}
 
   switch (message?.command) {
@@ -120,7 +120,7 @@ const handleWorkerMessages = ({id, event, port}) => {
       return
     }
     case SUBSCRIBE_TO_CHANNEL: {
-      subscribeToChannel({id, port}, message?.subscription)
+      subscribeToChannel({ id, port }, message?.subscription)
       return
     }
     case UNSUBSCRIBE_FROM_CHANNEL: {
@@ -132,11 +132,11 @@ const handleWorkerMessages = ({id, event, port}) => {
       return
     }
     case VISIBILITY_SHOW_COMMAND: {
-      resumeChannelsForPort({id, port})
+      resumeChannelsForPort({ id, port })
       return
     }
     case VISIBILITY_HIDDEN_COMMAND: {
-      pauseChannelsForPort({id, port})
+      pauseChannelsForPort({ id, port })
       return
     }
     default: {
@@ -146,7 +146,7 @@ const handleWorkerMessages = ({id, event, port}) => {
           if (ALL_COMMANDS.indexOf(command) >= 0) {
             throw new Error(`Command ${command} busy by cable-shared-worker`)
           }
-          port.postMessage({command, data})
+          port.postMessage({ command, data })
         }
         cableOptions.handleCustomWebCommand(message?.command, message?.data, responseFn)
       }
@@ -154,7 +154,7 @@ const handleWorkerMessages = ({id, event, port}) => {
   }
 }
 
-const disconnectSubscriptionsFromPort = ({id}) => {
+const disconnectSubscriptionsFromPort = ({ id }) => {
   if (!cableAPI) {
     return
   }
@@ -166,8 +166,8 @@ const disconnectSubscriptionsFromPort = ({id}) => {
 
 const registerPort = (port) => {
   const id = addPortForStore(port)
-  port.addEventListener('message', (event) => handleWorkerMessages({port, id, event}))
-  port.addEventListener('messageerror', (event) => captureWorkerError({port, id, event}))
+  port.addEventListener('message', (event) => handleWorkerMessages({ port, id, event }))
+  port.addEventListener('messageerror', (event) => captureWorkerError({ port, id, event }))
 }
 
 if (isSharedWorker) {
@@ -198,8 +198,8 @@ const initCableLibrary = (options = {}) => {
   if (cableAPI) {
     return cableAPI
   }
-  cableOptions = {...DEFAULT_OPTIONS, ...options}
-  const {cableType, cableLibrary, ...restOptions} = cableOptions
+  cableOptions = { ...DEFAULT_OPTIONS, ...options }
+  const { cableType, cableLibrary, ...restOptions } = cableOptions
   cableAPI = loadCableApiWrapper(cableType, cableLibrary, restOptions, {
     connect: afterConnect,
     disconnect: afterDisconnect
@@ -207,4 +207,4 @@ const initCableLibrary = (options = {}) => {
   return cableAPI
 }
 
-export {initCableLibrary}
+export { initCableLibrary }

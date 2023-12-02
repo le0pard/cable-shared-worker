@@ -1,7 +1,7 @@
 import alias from '@rollup/plugin-alias'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-import {babel} from '@rollup/plugin-babel'
+import { babel } from '@rollup/plugin-babel'
 // packages
 import webPkg from './packages/web/package.json'
 import workerPkg from './packages/worker/package.json'
@@ -61,7 +61,7 @@ const makeConfig = () => {
       ],
       plugins: [
         alias({
-          entries: [{find: /^cable-shared\/(.*)/, replacement: './shared/$1.js'}]
+          entries: [{ find: /^cable-shared\/(.*)/, replacement: './shared/$1.js' }]
         }),
         resolve(), // teach Rollup how to find external modules
         commonjs(), // so Rollup can convert external modules to an ES module

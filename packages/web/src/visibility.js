@@ -12,7 +12,7 @@ const getVisibilityPropertyNames = () => {
 
 const [visibilityState, visibilityChange] = getVisibilityPropertyNames()
 
-export const activateVisibilityAPI = ({timeout, visible, hidden}) => {
+export const activateVisibilityAPI = ({ timeout, visible, hidden }) => {
   let visibilityTimer = null
   let isChannelsWasPaused = false
 

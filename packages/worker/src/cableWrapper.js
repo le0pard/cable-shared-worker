@@ -1,4 +1,4 @@
-import {ACTIONCABLE_TYPE, WEBSOCKET_MESSAGE_COMMAND} from './../../../shared/constants'
+import { ACTIONCABLE_TYPE, WEBSOCKET_MESSAGE_COMMAND } from './../../../shared/constants'
 
 const UNSUBSCRIBE_CHECK_TIMEOUT = 300 // give time to unsubscribe from channels
 
@@ -71,10 +71,10 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
         }
         return resolve()
       }),
-    subscribeTo: ({port, portID, id, channel, params = {}}) => {
+    subscribeTo: ({ port, portID, id, channel, params = {} }) => {
       resumeConnectionIfNeeded()
 
-      const channelData = {channel, params}
+      const channelData = { channel, params }
 
       const addSubscription = (subscriptionChannel) => {
         portReceiverMapping = {
@@ -97,7 +97,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
           },
           {
             received: (data) => {
-              port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id})
+              port.postMessage({ command: WEBSOCKET_MESSAGE_COMMAND, data, id })
             }
           }
         )
@@ -106,22 +106,22 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
       } else {
         return websocketConnection.subscribeTo(channel, params).then((subscriptionChannel) => {
           subscriptionChannel.on('message', (data) => {
-            port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id})
+            port.postMessage({ command: WEBSOCKET_MESSAGE_COMMAND, data, id })
           })
 
           return addSubscription(subscriptionChannel)
         })
       }
     },
-    performInChannel: (portID, id, {action, params = {}}) => {
+    performInChannel: (portID, id, { action, params = {} }) => {
       if (portReceiverMapping[portID] && portReceiverMapping[portID][id]?.channel) {
-        const {channel} = portReceiverMapping[portID][id]
+        const { channel } = portReceiverMapping[portID][id]
         channel.perform(action, params)
       }
     },
     unsubscribeFrom: (portID, id) => {
       if (portReceiverMapping[portID] && portReceiverMapping[portID][id]?.channel) {
-        const {channel} = portReceiverMapping[portID][id]
+        const { channel } = portReceiverMapping[portID][id]
         if (isActioncableAPI) {
           channel.unsubscribe()
         } else {
@@ -158,7 +158,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
           if (portKey === portID) {
             Object.keys(portReceiverMapping[portKey]).forEach((keySub) => {
               if (portReceiverMapping[portKey][keySub]?.channel) {
-                const {channel} = portReceiverMapping[portKey][keySub]
+                const { channel } = portReceiverMapping[portKey][keySub]
                 if (isActioncableAPI) {
                   channel.unsubscribe()
                 } else {
@@ -179,7 +179,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
         setTimeout(() => pauseConnectionIfNeeded(), UNSUBSCRIBE_CHECK_TIMEOUT)
       }
     },
-    resumeChannels: ({id, port}) => {
+    resumeChannels: ({ id, port }) => {
       if (portReceiverMapping[id]) {
         resumeConnectionIfNeeded()
 
@@ -201,7 +201,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
                 portReceiverMapping[id][keySub]?.channelData &&
                 !portReceiverMapping[id][keySub]?.channel
               ) {
-                const {channel, params} = portReceiverMapping[id][keySub].channelData
+                const { channel, params } = portReceiverMapping[id][keySub].channelData
                 const subscriptionChannel = websocketConnection.subscriptions.create(
                   {
                     ...params,
@@ -209,7 +209,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
                   },
                   {
                     received: (data) => {
-                      port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id: keySub})
+                      port.postMessage({ command: WEBSOCKET_MESSAGE_COMMAND, data, id: keySub })
                     }
                   }
                 )
@@ -236,13 +236,13 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
                 portReceiverMapping[id][keySub]?.channelData &&
                 !portReceiverMapping[id][keySub]?.channel
               ) {
-                const {channelData} = portReceiverMapping[id][keySub]
-                const {channel, params} = channelData
+                const { channelData } = portReceiverMapping[id][keySub]
+                const { channel, params } = channelData
                 return websocketConnection
                   .subscribeTo(channel, params)
                   .then((subscriptionChannel) => {
                     subscriptionChannel.on('message', (data) => {
-                      port.postMessage({command: WEBSOCKET_MESSAGE_COMMAND, data, id: keySub})
+                      port.postMessage({ command: WEBSOCKET_MESSAGE_COMMAND, data, id: keySub })
                     })
 
                     return [
@@ -275,7 +275,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
         }
       }
     },
-    pauseChannels: ({id}) => {
+    pauseChannels: ({ id }) => {
       if (portReceiverMapping[id]) {
         portReceiverMapping = {
           ...portReceiverMapping,
@@ -284,7 +284,7 @@ export const initCableWrapper = (apiType = ACTIONCABLE_TYPE, api, options = {}, 
               portReceiverMapping[id][keySub]?.channel &&
               portReceiverMapping[id][keySub]?.channelData
             ) {
-              const {channel, ...restData} = portReceiverMapping[id][keySub]
+              const { channel, ...restData } = portReceiverMapping[id][keySub]
               if (isActioncableAPI) {
                 channel.unsubscribe()
               } else {

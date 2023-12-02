@@ -1,5 +1,5 @@
-import {ACTIONCABLE_TYPE, ANYCABLE_TYPE} from './../../../shared/constants'
-import {initCableWrapper} from './cableWrapper'
+import { ACTIONCABLE_TYPE, ANYCABLE_TYPE } from './../../../shared/constants'
+import { initCableWrapper } from './cableWrapper'
 
 export const loadCableApiWrapper = (
   cableType = ACTIONCABLE_TYPE,
