@@ -64,7 +64,7 @@ jobs:
           yarn config set npmPublishAccess "public"
 
       - name: Publish packages 🚀
-        run: yarn workspaces foreach --no-private npm publish
+        run: yarn workspaces foreach -W --no-private npm publish
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
