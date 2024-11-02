@@ -81,9 +81,12 @@ const startWorker = ({
 }) => {
   try {
     if (type === TYPE_SHARED_WORKER) {
-      workerPort = new window.SharedWorker(workerUrl, workerOptions).port
+      const worker = new window.SharedWorker(workerUrl, workerOptions)
+      worker.addEventListener('error', (event) => options.onError?.(event))
+      workerPort = worker.port
     } else {
       workerPort = new window.Worker(workerUrl, workerOptions)
+      workerPort.addEventListener('error', (event) => options.onError?.(event))
     }
   } catch (e) {
     return reject(e)
@@ -93,10 +96,7 @@ const startWorker = ({
   }
 
   workerPort.addEventListener('message', (event) => handleWorkerMessages({ event, options }))
-  if (options.onError) {
-    workerPort.addEventListener('error', (event) => options.onError(event.toString()))
-    workerPort.addEventListener('messageerror', (event) => options.onError(event.toString()))
-  }
+  workerPort.addEventListener('messageerror', (event) => options.onError?.(event))
 
   if (type === TYPE_SHARED_WORKER) {
     workerPort.start() // we need start port only for shared worker
