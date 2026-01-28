@@ -35,6 +35,11 @@ jobs:
     needs: test
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    environment:
+      name: production
     env:
       NODE_ENV: production
     steps:
@@ -65,6 +70,4 @@ jobs:
 
       - name: Publish packages 🚀
         run: yarn workspaces foreach -W --no-private npm publish
-        env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
