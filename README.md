@@ -1,4 +1,4 @@
-# Cable-shared-worker (CableSW) - ActionCable and AnyCable Shared Worker support [![Test/Build/Deploy](https://github.com/le0pard/cable-shared-worker/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/le0pard/cable-shared-worker/actions/workflows/ci.yml)
+# Cable-shared-worker (CableSW) - ActionCable and AnyCable Shared Worker support [![Test/Build/Deploy](https://github.com/le0pard/cable-shared-worker/actions/workflows/ci.yml/badge.svg)](https://github.com/le0pard/cable-shared-worker/actions/workflows/ci.yml)
 
 ![schema](https://user-images.githubusercontent.com/98444/146681981-2e87a26e-9a5b-4109-9b05-73c1329b3ccc.jpg)
 
