@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/le0pard/cable-shared-worker#readme",
   "devDependencies": {
-    "@babel/core": "^7.28.6",
+    "@babel/core": "^7.29.6",
     "@babel/eslint-parser": "^7.28.6",
     "@babel/preset-env": "^7.28.6",
     "@rollup/plugin-alias": "^5.1.1",
